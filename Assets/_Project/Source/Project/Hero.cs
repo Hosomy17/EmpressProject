@@ -49,6 +49,18 @@ public class Hero : MonoBehaviour
     private TaskHandle m_taskDashCooldown = new();
     private TaskHandle m_taskAttack = new();
 
+    [Header("Settings Particles")]
+    [SerializeField] private ParticleSystem m_runParticles;
+    [SerializeField] private float m_runParticleInterval = 0.2f; // Tempo entre cada partícula
+    private float m_runParticleTimer = 0f;
+
+    [Header("Settings Jump/Land Particles")]
+    [SerializeField] private ParticleSystem m_jumpParticles;
+    [SerializeField] private ParticleSystem m_landParticles;
+
+    // Variável para lembrar se o player estava no chão no frame passado
+    private bool m_wasGrounded = true;
+
     private void Awake()
     {
         m_inputActions = new InputSystemActions();
@@ -77,14 +89,31 @@ public class Hero : MonoBehaviour
     private void Update()
     {
         UpdateAnimations();
+        UpdateAnimations();
+        HandleRunParticles(); // Nova chamada aqui
     }
 
     private void FixedUpdate()
     {
+        // 1. Guarda o estado antes de checar novamente
+        m_wasGrounded = m_isGrounded;
+
         RaycastHit2D hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, m_groundLayer);
         m_isGrounded = hit.collider != null && m_rigidbody2D.linearVelocity.y <= 0.01f;
+
         if (m_isGrounded)
+        {
             m_hasJump = true;
+
+            // 2. Se antes NÃO estava no chão e agora ESTÁ, significa que acabou de pousar
+            if (!m_wasGrounded)
+            {
+                if (m_landParticles != null)
+                {
+                    m_landParticles.Play();
+                }
+            }
+        }
 
         Run();
     }
@@ -129,18 +158,54 @@ public class Hero : MonoBehaviour
             return !m_isDashing && !m_isRecoiling;
         }
 
+    private void HandleRunParticles()
+    {
+        // Verifica se o jogador está correndo de fato: no chão, com input de direção e não travado por dash/recoil
+        bool isRunning = m_isGrounded && Mathf.Abs(m_moveInput.x) > 0.05f && CanRun();
+
+        if (isRunning)
+        {
+            m_runParticleTimer -= Time.deltaTime;
+
+            if (m_runParticleTimer <= 0f)
+            {
+                if (m_runParticles != null)
+                {
+                    // Emit(1) é geralmente melhor que Play() para passos, pois cospe exatamente 1 partícula por vez
+                    // ignorando o "Emission Rate" padrão configurado no inspetor da Unity.
+                    m_runParticles.Emit(1);
+                }
+
+                // Reseta o timer para o próximo "passo"
+                m_runParticleTimer = m_runParticleInterval;
+            }
+        }
+        else
+        {
+            // Quando parar de correr, zeramos o timer. 
+            // Assim, quando o player voltar a correr, a primeira partícula sai instantaneamente.
+            m_runParticleTimer = 0f;
+        }
+    }
+
     #endregion
 
     #region Jump Behaviour
 
     private void Jump(InputAction.CallbackContext callbackContext)
         {
-            if (!CanJump()) return;
-    
-            m_hasJump = false;
-            m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, 0);
-            m_rigidbody2D.AddForce(Vector2.up * m_jumpForce, ForceMode2D.Impulse);
+        if (!CanJump()) return;
+
+        m_hasJump = false;
+        m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, 0);
+        m_rigidbody2D.AddForce(Vector2.up * m_jumpForce, ForceMode2D.Impulse);
+
+        // Toca a partícula do pulo
+        if (m_jumpParticles != null)
+        {
+            m_jumpParticles.Play();
         }
+    }
     
         private void PogoJump()
         {
