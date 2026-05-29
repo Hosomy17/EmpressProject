@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c6740c6aa9493cae40bdec6bd1bb38, type: 3}
+  m_Name: HeroData
+  m_EditorClassIdentifier: Com.Voobox.Project.Data::Com.Voobox.Project.Data.HeroDataScriptableObject
+  m_heroData:
+    m_jumpForce: 55
+    m_groundLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    m_speed: 5
+    m_dashForce: 20
+    m_dashDuration: 0.2
+    m_dashCooldown: 1
+    m_atkTime: 0.3
+    m_smoothSpeed: 5
+    m_screenShakeForce: 0.2
+    m_screenShakeDirection: {x: 0.75, y: 0.3}
+    m_recoilBackForce: 2
+    m_recoilUpForce: 1
+    m_recoilDuration: 0.2

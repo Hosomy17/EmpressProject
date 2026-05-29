@@ -1,0 +1,14 @@
+{
+    "name": "Com.Voobox.Project.Utils",
+    "rootNamespace": "Com.Voobox.Project.Utils",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

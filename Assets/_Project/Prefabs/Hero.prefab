@@ -10376,6 +10376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a66ac0f93ad13d5489d5bd76907d7b29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hero
+  m_data: {fileID: 11400000, guid: d61c620e13c81224885e65b3d568f641, type: 2}
   m_jumpForce: 55
   m_groundLayer:
     serializedVersion: 2
@@ -10390,7 +10391,7 @@ MonoBehaviour:
   m_atkDownPoint: {fileID: 5446591728158056248}
   m_atkTime: 0.3
   m_positionComposer: {fileID: 0}
-  smoothSpeed: 5
+  m_smoothSpeed: 5
   m_screenShakeForce: 0.2
   m_screenShakeDirection: {x: 0.75, y: 0.3}
   m_recoilBackForce: 2

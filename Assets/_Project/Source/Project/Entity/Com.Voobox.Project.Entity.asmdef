@@ -1,0 +1,24 @@
+{
+    "name": "Com.Voobox.Project.Entity",
+    "rootNamespace": "Com.Voobox.Project.Entity",
+    "references": [
+        "GUID:a0f3c38395f1632458491ab636c020e1",
+        "GUID:0f68f0913ec57c640a83c9f4fc281a44",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:c683bd08dac03b94890f1ed9181f7f55",
+        "GUID:c3628bd58daa59140a633fa6e5711bb2",
+        "GUID:acf9800d72a32c548ac0f0c44904c200",
+        "GUID:bb2b36e553b3dcb4f83b3babae58fa1a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
