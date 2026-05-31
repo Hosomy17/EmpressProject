@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Com.Voobox.Project.Data
 {
     [Serializable]
-    public class HeroData : IAttackerData, IDasherData, IJumperData, IMovementData, IScreenShakerData
+    public class HeroData : IAttackerData, IDasherData, IMovementData, IScreenShakerData
     {
         [SerializeField, FoldoutGroup("Attack Setup")] private float m_attackDuration;
 
@@ -15,10 +15,9 @@ namespace Com.Voobox.Project.Data
         [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashDuration;
         [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashCooldown;
 
-        [SerializeField, FoldoutGroup("Jump Setup")] private float m_jumpForce;
-        [SerializeField, FoldoutGroup("Jump Setup")] private LayerMask m_groundLayer;
-
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_speed;
+        [SerializeField, FoldoutGroup("Movement Setup")] private float m_jumpForce;
+        [SerializeField, FoldoutGroup("Movement Setup")] private LayerMask m_groundLayer;
 
         [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_smoothSpeed; 
         [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_screenShakeForce;

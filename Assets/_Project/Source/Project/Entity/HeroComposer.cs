@@ -34,7 +34,6 @@ namespace Com.Voobox.Project.Entity
         [SerializeField] private ParticleSystem m_jumpParticles;
         [SerializeField] private ParticleSystem m_landParticles;
 
-        private JumperComponent m_jumperComponent;
         private MovementComponent m_movementComponent;
         private DasherComponent m_dasherComponent;
         private AttackerComponent m_attackerComponent;
@@ -86,7 +85,6 @@ namespace Com.Voobox.Project.Entity
             m_heroData.HeroData.Rigidbody2D = m_rigidbody2D;
             m_heroData.HeroData.PositionComposer = m_positionComposer;
 
-            m_jumperComponent = new JumperComponent(m_heroData.HeroData);
             m_movementComponent = new MovementComponent(m_heroData.HeroData);
             m_dasherComponent = new DasherComponent(m_heroData.HeroData);
             m_attackerComponent = new AttackerComponent(m_heroData.HeroData);
@@ -162,7 +160,7 @@ namespace Com.Voobox.Project.Entity
             return new Vector2(x, y);
         }
 
-        #region Run Behaviour
+        #region Movement Behaviour
 
         private void HandleRunParticles()
         {
@@ -197,17 +195,13 @@ namespace Com.Voobox.Project.Entity
             return !m_isDashing && !m_isRecoiling;
         }
 
-        #endregion
-
-        #region Jump Behaviour
-
         private void Jump(InputAction.CallbackContext callbackContext)
         {
             if (!CanJump()) return;
 
             m_hasJump = false;
             m_isJumping = true;
-            m_jumperComponent.Jump();
+            m_movementComponent.Jump();
 
             if (m_jumpParticles != null)
                 m_jumpParticles.Play();
@@ -216,7 +210,7 @@ namespace Com.Voobox.Project.Entity
         private void JumpCut(InputAction.CallbackContext callbackContext)
         {
             if (m_isJumping && m_rigidbody2D.linearVelocity.y > 0)
-                m_jumperComponent.JumpCut();
+                m_movementComponent.JumpCut();
 
             m_isJumping = false;
         }
@@ -226,7 +220,7 @@ namespace Com.Voobox.Project.Entity
             await DoHitStop();
             m_hasJump = true;
             m_isJumping = false;
-            m_jumperComponent.Jump();
+            m_movementComponent.Jump();
             m_screenShakerComponent.GenerateImpulse();
         }
 
