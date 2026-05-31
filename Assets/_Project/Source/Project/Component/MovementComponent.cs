@@ -32,5 +32,16 @@ namespace Com.Voobox.Project.Component
         {
             m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, 0);
         }
+
+        public void Jump()
+        {
+            m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, 0);
+            m_rigidbody2D.AddForce(Vector2.up * m_movementData.JumpForce, ForceMode2D.Impulse);
+        }
+
+        public void JumpCut()
+        {
+            m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, m_rigidbody2D.linearVelocity.y * 0.5f);
+        }
     }
 }

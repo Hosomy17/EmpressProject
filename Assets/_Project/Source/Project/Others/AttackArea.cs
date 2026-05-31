@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Com.Voobox.Project.Others
+namespace Com.Voobox.Project.Others//TODO
 {
     [RequireComponent(typeof(Collider2D))]
     public class AttackArea : MonoBehaviour 
