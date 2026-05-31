@@ -1,6 +1,7 @@
 using ArtificeToolkit.Attributes;
 using Com.Voobox.Project.Component;
 using Com.Voobox.Project.Data;
+using Com.Voobox.Project.Others;
 using Cysharp.Threading.Tasks;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -12,56 +13,62 @@ namespace Com.Voobox.Project.Entity
     [RequireComponent(typeof(SpriteRenderer))]
     public class HeroComposer : MonoBehaviour
     {
-        [SerializeField, InlineObject] private HeroDataScriptableObject m_data;
-    
-        [Header("Settings Attack")]//TODO
-        [SerializeField] private AttackArea m_atkRightPoint;
-        [SerializeField] private AttackArea m_atkLeftPoint;
-        [SerializeField] private AttackArea m_atkUpPoint;
-        [SerializeField] private AttackArea m_atkDownPoint;
+        [SerializeField]
+        [InlineObject]
+        private HeroDataScriptableObject m_heroData;
 
-        [Header("Settings Screen")]//TODO
+        [Header("Attack Setup")]
+        [SerializeField] private AttackArea m_attackUpArea;
+        [SerializeField] private AttackArea m_attackDownArea;
+        [SerializeField] private AttackArea m_attackLeftArea;
+        [SerializeField] private AttackArea m_attackRightArea;
+
+        [Header("ScreenShake Setup")]
         [SerializeField] private CinemachinePositionComposer m_positionComposer;
-        
-        [Header("Settings Particles")]
+
+        [Header("Settings Particles")]//TODO
         [SerializeField] private ParticleSystem m_runParticles;
         [SerializeField] private float m_runParticleInterval = 0.2f;
 
-        [Header("Settings Jump/Land Particles")]
+        [Header("Settings Jump/Land Particles")]//TODO
         [SerializeField] private ParticleSystem m_jumpParticles;
         [SerializeField] private ParticleSystem m_landParticles;
-        
+
         private JumperComponent m_jumperComponent;
         private MovementComponent m_movementComponent;
         private DasherComponent m_dasherComponent;
         private AttackerComponent m_attackerComponent;
         private HeroAnimatorComponent m_heroAnimatorComponent;
-        
         private FrameFreezerComponent m_frameFreezerComponent;
         private ScreenShakerComponent m_screenShakerComponent;
-    
+
         private InputSystemActions m_inputActions;
         private Vector2 m_moveInput;
-        private Rigidbody2D m_rigidbody2D;
         private Collider2D m_boxCollider;
+        private Rigidbody2D m_rigidbody2D;
 
         private float m_runParticleTimer = 0f;
         private bool m_wasGrounded = true;
-    
+
         private bool m_isFacingRight = true;
         private bool m_isGrounded = true;
         private bool m_isAttacking = false;
         private bool m_isRecoiling = false;
         private bool m_isHitStoping = false;
-    
+
         private bool m_isJumping = false;
         private bool m_hasJump = true;
         private bool m_hasDash = true;
-    
+
         private bool m_isDashing = false;
 
         private void Awake()
         {
+            m_rigidbody2D = GetComponent<Rigidbody2D>();
+            m_boxCollider = GetComponent<BoxCollider2D>();
+            var animator = GetComponent<Animator>();
+            var renderer = GetComponent<SpriteRenderer>();
+
             m_inputActions = new InputSystemActions();
             m_inputActions.Player.Move.performed += ctx => m_moveInput = ApplyDeadZone(axis: ctx.ReadValue<Vector2>());
             m_inputActions.Player.Move.canceled += _ => m_moveInput = Vector2.zero;
@@ -69,29 +76,31 @@ namespace Com.Voobox.Project.Entity
             m_inputActions.Player.Jump.canceled += JumpCut;
             m_inputActions.Player.Dash.performed += _ => Dash().Forget();
             m_inputActions.Player.Attack.performed += _ => HandleAttack().Forget();
-        
-            m_rigidbody2D = GetComponent<Rigidbody2D>();
-            m_boxCollider = GetComponent<BoxCollider2D>();
-            var animator = GetComponent<Animator>();
-            var renderer = GetComponent<SpriteRenderer>();
-            var impulseSource = GetComponent<CinemachineImpulseSource>();
 
-            m_jumperComponent = new JumperComponent(jumpForce: m_data.HeroData.JumpForce, rigidbody2D: m_rigidbody2D);
-            m_movementComponent = new MovementComponent(speed: m_data.HeroData.Speed, recoilBackForce: m_data.HeroData.RecoilBackForce, recoilUpForce: m_data.HeroData.RecoilUpForce, recoilDuration: m_data.HeroData.RecoilDuration, rigidbody2D: m_rigidbody2D);
-            m_dasherComponent = new DasherComponent(dashForce: m_data.HeroData.DashForce, dashDuration: m_data.HeroData.DashDuration, dashCooldown: m_data.HeroData.DashCooldown, rigidbody2D: m_rigidbody2D);
-            m_attackerComponent = new AttackerComponent(atkTime: m_data.HeroData.AtkTime);
-            m_heroAnimatorComponent = new HeroAnimatorComponent(animator, renderer);
+            m_heroData = Instantiate(m_heroData);
+            m_heroData.HeroData.AttackUp = m_attackUpArea;
+            m_heroData.HeroData.AttackDown = m_attackDownArea;
+            m_heroData.HeroData.AttackLeft = m_attackLeftArea;
+            m_heroData.HeroData.AttackRight = m_attackRightArea;
+            m_heroData.HeroData.ImpulseSource = GetComponent<CinemachineImpulseSource>();
+            m_heroData.HeroData.Rigidbody2D = m_rigidbody2D;
+            m_heroData.HeroData.PositionComposer = m_positionComposer;
 
-            m_frameFreezerComponent = new FrameFreezerComponent();
-            m_screenShakerComponent = new ScreenShakerComponent(screenShakeDirection: m_data.HeroData.ScreenShakeDirection, screenShakeForce: m_data.HeroData.ScreenShakeForce, smoothSpeed: m_data.HeroData.SmoothSpeed, impulseSource: impulseSource, positionComposer: m_positionComposer, rigidbody2D: m_rigidbody2D);
+            m_jumperComponent = new JumperComponent(m_heroData.HeroData);
+            m_movementComponent = new MovementComponent(m_heroData.HeroData);
+            m_dasherComponent = new DasherComponent(m_heroData.HeroData);
+            m_attackerComponent = new AttackerComponent(m_heroData.HeroData);
+            m_heroAnimatorComponent = new HeroAnimatorComponent(animator, renderer);//TODO
+            m_frameFreezerComponent = new FrameFreezerComponent();//TODO
+            m_screenShakerComponent = new ScreenShakerComponent(m_heroData.HeroData);
         }
 
         private void Start()
         {
-            m_atkRightPoint.OnHitSuccess += () => Recoil(false).Forget();
-            m_atkLeftPoint.OnHitSuccess += () => Recoil(true).Forget();
-            m_atkDownPoint.OnHitSuccess += () => PogoJump().Forget();
-            m_atkUpPoint.OnHitSuccess += HandleUpAttackHit;
+            m_attackRightArea.OnHitSuccess += () => Recoil(false).Forget();
+            m_attackLeftArea.OnHitSuccess += () => Recoil(true).Forget();
+            m_attackDownArea.OnHitSuccess += () => PogoJump().Forget();
+            m_attackUpArea.OnHitSuccess += HandleUpAttackHit;
         }
 
         private void OnEnable() => m_inputActions.Enable();
@@ -106,7 +115,6 @@ namespace Com.Voobox.Project.Entity
 
         private void FixedUpdate()
         {
-            
             CheckGround();
             m_screenShakerComponent.StabilizeTargetOffset();
             Run();
@@ -115,7 +123,7 @@ namespace Com.Voobox.Project.Entity
         private void CheckGround()
         {
             m_wasGrounded = m_isGrounded;
-            var hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, m_data.HeroData.GroundLayer);
+            var hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, m_heroData.HeroData.GroundLayer);
             m_isGrounded = hit.collider != null && m_rigidbody2D.linearVelocity.y <= 0.01f;
 
             if (!m_isGrounded) return;
@@ -123,13 +131,13 @@ namespace Com.Voobox.Project.Entity
             m_isJumping = false;
 
             if (m_wasGrounded) return;
-            
+
             if (m_landParticles != null)
             {
                 m_landParticles.Play();
             }
         }
-    
+
         private void UpdateAnimations()
         {
             m_heroAnimatorComponent.SetSpeed(Mathf.Abs(m_moveInput.x));
@@ -137,7 +145,7 @@ namespace Com.Voobox.Project.Entity
             m_heroAnimatorComponent.SetDash(m_isDashing);
             m_heroAnimatorComponent.SetAirVelocity(m_rigidbody2D.linearVelocity.y);
         }
-    
+
         private void HandleFlip()
         {
             if (m_isDashing || m_moveInput.x == 0) return;
@@ -165,7 +173,7 @@ namespace Com.Voobox.Project.Entity
                 m_runParticleTimer -= Time.deltaTime;
 
                 if (!(m_runParticleTimer <= 0f)) return;
-            
+
                 if (m_runParticles != null)
                     m_runParticles.Emit(1);
 
@@ -176,11 +184,11 @@ namespace Com.Voobox.Project.Entity
                 m_runParticleTimer = 0f;
             }
         }
-    
+
         private void Run()
         {
             if (!CanRun()) return;
-            
+
             m_movementComponent.Run(m_moveInput.x);
         }
 
@@ -196,20 +204,20 @@ namespace Com.Voobox.Project.Entity
         private void Jump(InputAction.CallbackContext callbackContext)
         {
             if (!CanJump()) return;
-            
+
             m_hasJump = false;
             m_isJumping = true;
             m_jumperComponent.Jump();
-        
+
             if (m_jumpParticles != null)
                 m_jumpParticles.Play();
         }
-    
+
         private void JumpCut(InputAction.CallbackContext callbackContext)
         {
             if (m_isJumping && m_rigidbody2D.linearVelocity.y > 0)
                 m_jumperComponent.JumpCut();
-        
+
             m_isJumping = false;
         }
 
@@ -230,7 +238,7 @@ namespace Com.Voobox.Project.Entity
         #endregion
 
         #region Dash Behaviour
-    
+
         private async UniTaskVoid Dash()
         {
             if (!CanDash()) return;
@@ -251,7 +259,7 @@ namespace Com.Voobox.Project.Entity
         {
             return m_hasDash && !m_isAttacking;
         }
-    
+
         #endregion
 
         #region Attack Behaviour
@@ -260,60 +268,60 @@ namespace Com.Voobox.Project.Entity
         {
             if(!CanAttack()) return;
 
-            AttackArea attackArea;
             m_isAttacking = true;
             switch (m_moveInput.y)
             {
                 case > 0.5f:
-                    attackArea = m_atkUpPoint;
                     m_heroAnimatorComponent.SetAttackUp(true);
+                    await m_attackerComponent.AttackUp();
                     break;
                 case < -0.5f when !m_isGrounded:
-                    attackArea = m_atkDownPoint;
                     m_heroAnimatorComponent.SetAttackDown(true);
+                    await m_attackerComponent.AttackDown();
                     break;
                 default:
                 {
-                    attackArea = m_isFacingRight ? m_atkRightPoint : m_atkLeftPoint;
                     m_heroAnimatorComponent.SetAttackFront(true);
+                    if (m_isFacingRight)
+                        await m_attackerComponent.AttackRight();
+                    else
+                        await m_attackerComponent.AttackLeft();
                     break;
                 }
             }
 
-            await m_attackerComponent.Attack(attackArea);
             m_heroAnimatorComponent.SetAllAttacks(false);
             m_isAttacking = false;
-            
         }
-    
+
         private void HandleUpAttackHit()
         {
             m_screenShakerComponent.ShakeForce(-1f);
             DoHitStop().Forget();
-        
+
             if (!m_isGrounded)
                 m_movementComponent.StopVerticalVelocity();
         }
-    
+
         private async UniTaskVoid Recoil(bool isDirectionRight)
         {
             if (m_isRecoiling) return;
-        
+
             await DoHitStop();
             m_isRecoiling = true;
-        
+
             var recoilDirection = isDirectionRight ? 1f : -1f;
-        
+
             m_screenShakerComponent.ShakeDirection(-recoilDirection);
             await m_movementComponent.Recoil(recoilDirection);
 
             m_isRecoiling = false;
         }
-    
+
         private async UniTask DoHitStop(float duration = 0.05f, float scale = 0.05f)
         {
             if(m_isHitStoping) return;
-        
+
             m_isHitStoping = true;
             await m_frameFreezerComponent.Freeze(duration, scale);
             m_isHitStoping = false;
@@ -323,7 +331,7 @@ namespace Com.Voobox.Project.Entity
         {
             return !m_isDashing && !m_isAttacking;
         }
-    
+
         #endregion
     }
 }

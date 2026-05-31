@@ -1,33 +1,45 @@
 ﻿using System;
+using ArtificeToolkit.Attributes;
+using Com.Voobox.Project.Others;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Com.Voobox.Project.Data
 {
     [Serializable]
-    public class HeroData
+    public class HeroData : IAttackerData, IDasherData, IJumperData, IMovementData, IScreenShakerData
     {
-        [Header("Settings Jump")]
-        [SerializeField] private float m_jumpForce;
-        [SerializeField] private LayerMask m_groundLayer;
-    
-        [Header("Setting Movement")]
-        [SerializeField] private float m_speed;
-    
-        [Header("Settings Dash")]
-        [SerializeField] private float m_dashForce;
-        [SerializeField] private float m_dashDuration;
-        [SerializeField] private float m_dashCooldown;
-    
-        [Header("Settings Attack")]
-        [SerializeField] private float m_atkTime;
+        [SerializeField, FoldoutGroup("Attack Setup")] private float m_attackDuration;
 
-        [Header("Settings Screen")]
-        [SerializeField] private float m_smoothSpeed = 1f; 
-        [SerializeField] private float m_screenShakeForce;
-        [SerializeField] private Vector2 m_screenShakeDirection;
-        [SerializeField] private float m_recoilBackForce;
-        [SerializeField] private float m_recoilUpForce;
-        [SerializeField] private float m_recoilDuration;
+        [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashForce;
+        [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashDuration;
+        [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashCooldown;
+
+        [SerializeField, FoldoutGroup("Jump Setup")] private float m_jumpForce;
+        [SerializeField, FoldoutGroup("Jump Setup")] private LayerMask m_groundLayer;
+
+        [SerializeField, FoldoutGroup("Movement Setup")] private float m_speed;
+
+        [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_smoothSpeed; 
+        [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_screenShakeForce;
+        [SerializeField, FoldoutGroup("ScreenShake Setup")] private Vector2 m_screenShakeDirection;
+        [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_recoilBackForce;
+        [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_recoilUpForce;
+        [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_recoilDuration;
+
+        public float AttackDuration => m_attackDuration;
+        public AttackArea AttackUp { get; set; }
+        public AttackArea AttackDown { get; set; }
+        public AttackArea AttackLeft { get; set; }
+        public AttackArea AttackRight { get; set; }
+
+        public float DashForce => m_dashForce;
+
+        public float DashDuration => m_dashDuration;
+
+        public float DashCooldown => m_dashCooldown;
+        public CinemachinePositionComposer PositionComposer { get; set; }
+        public Rigidbody2D Rigidbody2D { get; set; }
 
         public float JumpForce => m_jumpForce;
 
@@ -35,19 +47,12 @@ namespace Com.Voobox.Project.Data
 
         public float Speed => m_speed;
 
-        public float DashForce => m_dashForce;
-
-        public float DashDuration => m_dashDuration;
-
-        public float DashCooldown => m_dashCooldown;
-
-        public float AtkTime => m_atkTime;
-
         public float SmoothSpeed => m_smoothSpeed;
 
         public float ScreenShakeForce => m_screenShakeForce;
 
         public Vector2 ScreenShakeDirection => m_screenShakeDirection;
+        public CinemachineImpulseSource ImpulseSource { get; set; }
 
         public float RecoilBackForce => m_recoilBackForce;
 

@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 3296649834302299575}
   - component: {fileID: 5446591728158056248}
   m_Layer: 0
-  m_Name: AttackDown
+  m_Name: AttackDownArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5641575191131680070
 Transform:
   m_ObjectHideFlags: 0
@@ -5094,12 +5094,12 @@ GameObject:
   - component: {fileID: 6501189603271785211}
   - component: {fileID: 2642908059360585937}
   m_Layer: 0
-  m_Name: AttackUp
+  m_Name: AttackUpArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4578036977394631583
 Transform:
   m_ObjectHideFlags: 0
@@ -10083,12 +10083,12 @@ GameObject:
   - component: {fileID: 7874412684395563623}
   - component: {fileID: 7310163078355173035}
   m_Layer: 0
-  m_Name: AttackRight
+  m_Name: AttackRightArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5666627128006453610
 Transform:
   m_ObjectHideFlags: 0
@@ -10181,7 +10181,7 @@ GameObject:
   - component: {fileID: 1146786658931711333}
   - component: {fileID: 2285329886383516850}
   - component: {fileID: 6246485180281665430}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Hero
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10198,13 +10198,13 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -4.125, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4578036977394631583}
   - {fileID: 5641575191131680070}
-  - {fileID: 5666627128006453610}
   - {fileID: 8791063579207545906}
+  - {fileID: 5666627128006453610}
   - {fileID: 5143879623437644573}
   - {fileID: 7157231197455782809}
   - {fileID: 6473696288042073532}
@@ -10325,17 +10325,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.012086723, y: 0.064996935}
+  m_Offset: {x: -0.09, y: 0.45}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.4368932, y: 0.15151516}
-    oldSize: {x: 1.03, y: 0.33}
+    oldSize: {x: 6.866667, y: 2.2}
     newSize: {x: 0.48, y: 0.48}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.07582656, y: 0.14771043}
+  m_Size: {x: 0.73, y: 1}
   m_EdgeRadius: 0
 --- !u!50 &1146786658931711333
 Rigidbody2D:
@@ -10349,7 +10349,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 5
+  m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1.8
@@ -10376,11 +10376,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a66ac0f93ad13d5489d5bd76907d7b29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hero
-  m_data: {fileID: 11400000, guid: d61c620e13c81224885e65b3d568f641, type: 2}
-  m_atkRightPoint: {fileID: 7310163078355173035}
-  m_atkLeftPoint: {fileID: 7627896201000331651}
-  m_atkUpPoint: {fileID: 2642908059360585937}
-  m_atkDownPoint: {fileID: 5446591728158056248}
+  m_heroData: {fileID: 11400000, guid: d61c620e13c81224885e65b3d568f641, type: 2}
+  m_attackUpArea: {fileID: 2642908059360585937}
+  m_attackDownArea: {fileID: 5446591728158056248}
+  m_attackLeftArea: {fileID: 7627896201000331651}
+  m_attackRightArea: {fileID: 7310163078355173035}
   m_positionComposer: {fileID: 0}
   m_runParticles: {fileID: 7053164727426739145}
   m_runParticleInterval: 0.2
@@ -10451,12 +10451,12 @@ GameObject:
   - component: {fileID: 4048975168296287517}
   - component: {fileID: 7627896201000331651}
   m_Layer: 0
-  m_Name: AttackLeft
+  m_Name: AttackLeftArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8791063579207545906
 Transform:
   m_ObjectHideFlags: 0

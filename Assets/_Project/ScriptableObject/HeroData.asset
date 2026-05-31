@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: HeroData
   m_EditorClassIdentifier: Com.Voobox.Project.Data::Com.Voobox.Project.Data.HeroDataScriptableObject
   m_heroData:
-    m_jumpForce: 55
+    m_attackDuration: 0.4
+    m_dashForce: 20
+    m_dashDuration: 0.2
+    m_dashCooldown: 1
+    m_jumpForce: 10
     m_groundLayer:
       serializedVersion: 2
       m_Bits: 64
     m_speed: 5
-    m_dashForce: 20
-    m_dashDuration: 0.2
-    m_dashCooldown: 1
-    m_atkTime: 0.3
     m_smoothSpeed: 5
     m_screenShakeForce: 0.2
     m_screenShakeDirection: {x: 0.75, y: 0.3}
