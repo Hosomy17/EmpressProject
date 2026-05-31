@@ -635,14 +635,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: BossScene_Camera
       objectReference: {fileID: 0}
-    - target: {fileID: 4786415357799492786, guid: 256cfe9271d5b5c47a41168c8bbe4cda, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -3.5399995
-      objectReference: {fileID: 0}
-    - target: {fileID: 4946064493357639241, guid: 256cfe9271d5b5c47a41168c8bbe4cda, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.3
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

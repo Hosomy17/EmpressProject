@@ -1,24 +1,46 @@
 ﻿using System;
+using Com.Voobox.Project.Data;
+using Com.Voobox.Project.Others;
 using Cysharp.Threading.Tasks;
 
 namespace Com.Voobox.Project.Component
 {
     public class AttackerComponent
     {
-        private readonly float m_atkTime;
-        
+        private readonly IAttackerData m_attackerData;
+
         private readonly TaskHandle m_taskAttack = new();
 
-        public AttackerComponent(float atkTime)
+        public AttackerComponent(IAttackerData attackerData)
         {
-            m_atkTime = atkTime;
+            m_attackerData = attackerData;
         }
 
-        public async UniTask Attack(AttackArea attackArea)
+        public async UniTask AttackUp()
         {
-            attackArea.gameObject.SetActive(true);
-            await UniTask.Delay(TimeSpan.FromSeconds(m_atkTime), cancellationToken: m_taskAttack.GetNewToken()).SuppressCancellationThrow();
-            attackArea.gameObject.SetActive(false);
+            await Attack(m_attackerData.AttackUp);
+        }
+
+        public async UniTask AttackDown()
+        {
+            await Attack(m_attackerData.AttackDown);
+        }
+
+        public async UniTask AttackLeft()
+        {
+            await Attack(m_attackerData.AttackLeft);
+        }
+
+        public async UniTask AttackRight()
+        {
+            await Attack(m_attackerData.AttackRight);
+        }
+
+        private async UniTask Attack(AttackArea attackArea)
+        {
+            attackArea.ToggleArea(true);
+            await UniTask.Delay(TimeSpan.FromSeconds(m_attackerData.AttackDuration), cancellationToken: m_taskAttack.GetNewToken()).SuppressCancellationThrow();
+            attackArea.ToggleArea(false);
         }
     }
 }
