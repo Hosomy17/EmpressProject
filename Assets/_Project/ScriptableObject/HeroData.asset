@@ -17,11 +17,11 @@ MonoBehaviour:
     m_dashForce: 20
     m_dashDuration: 0.2
     m_dashCooldown: 1
+    m_speed: 6
     m_jumpForce: 10
     m_groundLayer:
       serializedVersion: 2
       m_Bits: 64
-    m_speed: 5
     m_smoothSpeed: 5
     m_screenShakeForce: 0.2
     m_screenShakeDirection: {x: 0.75, y: 0.3}
