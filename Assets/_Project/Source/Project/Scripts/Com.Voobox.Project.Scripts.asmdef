@@ -1,0 +1,14 @@
+{
+    "name": "Com.Voobox.Project.Scripts",
+    "rootNamespace": "Com.Voobox.Project.Scripts",
+    "references": ["GUID:b49857e2eea66644a914e6b6b9bffb6a","GUID:e21bcbae1a7445647837a3686c8f1571"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
