@@ -236,6 +236,7 @@ namespace Com.Voobox.Project.Entity
         private async UniTaskVoid Dash()
         {
             if (!CanDash()) return;
+            m_attackerComponent.StopAttack();
 
             m_hasDash = false;
             m_isDashing = true;
@@ -251,7 +252,7 @@ namespace Com.Voobox.Project.Entity
 
         private bool CanDash()
         {
-            return m_hasDash && !m_isAttacking;
+            return m_hasDash;
         }
 
         #endregion
@@ -265,11 +266,11 @@ namespace Com.Voobox.Project.Entity
             m_isAttacking = true;
             switch (m_moveInput.y)
             {
-                case > 0.5f:
+                case > 0.75f:
                     m_heroAnimatorComponent.SetAttackUp(true);
                     await m_attackerComponent.AttackUp();
                     break;
-                case < -0.5f when !m_isGrounded:
+                case < -0.75f when !m_isGrounded:
                     m_heroAnimatorComponent.SetAttackDown(true);
                     await m_attackerComponent.AttackDown();
                     break;
