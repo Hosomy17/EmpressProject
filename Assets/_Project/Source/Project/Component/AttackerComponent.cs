@@ -36,6 +36,11 @@ namespace Com.Voobox.Project.Component
             await Attack(m_attackerData.AttackRight);
         }
 
+        public void StopAttack()
+        {
+            m_taskAttack.Stop();
+        }
+
         private async UniTask Attack(AttackArea attackArea)
         {
             attackArea.ToggleArea(true);
