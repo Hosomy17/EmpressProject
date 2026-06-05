@@ -94,7 +94,12 @@ MonoBehaviour:
   m_targetLayer:
     serializedVersion: 2
     m_Bits: 128
-  m_vfxImpactPrefab: {fileID: 2297479053056231464, guid: b97eea6a477b3df4a96b3181d2ff9fa9, type: 3}
+  m_vfxImpactAssetReference:
+    m_AssetGUID: b97eea6a477b3df4a96b3181d2ff9fa9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
 --- !u!1 &786086054130379980
 GameObject:
   m_ObjectHideFlags: 0
@@ -5176,7 +5181,12 @@ MonoBehaviour:
   m_targetLayer:
     serializedVersion: 2
     m_Bits: 128
-  m_vfxImpactPrefab: {fileID: 2297479053056231464, guid: b97eea6a477b3df4a96b3181d2ff9fa9, type: 3}
+  m_vfxImpactAssetReference:
+    m_AssetGUID: b97eea6a477b3df4a96b3181d2ff9fa9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
 --- !u!1 &6276252160354315763
 GameObject:
   m_ObjectHideFlags: 0
@@ -10165,7 +10175,12 @@ MonoBehaviour:
   m_targetLayer:
     serializedVersion: 2
     m_Bits: 128
-  m_vfxImpactPrefab: {fileID: 2297479053056231464, guid: b97eea6a477b3df4a96b3181d2ff9fa9, type: 3}
+  m_vfxImpactAssetReference:
+    m_AssetGUID: b97eea6a477b3df4a96b3181d2ff9fa9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
 --- !u!1 &7766403067532229784
 GameObject:
   m_ObjectHideFlags: 0
@@ -10533,4 +10548,9 @@ MonoBehaviour:
   m_targetLayer:
     serializedVersion: 2
     m_Bits: 128
-  m_vfxImpactPrefab: {fileID: 2297479053056231464, guid: b97eea6a477b3df4a96b3181d2ff9fa9, type: 3}
+  m_vfxImpactAssetReference:
+    m_AssetGUID: b97eea6a477b3df4a96b3181d2ff9fa9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0

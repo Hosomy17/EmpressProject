@@ -149,6 +149,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1264037927}
+  - {fileID: 805382015}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &542318750 stripped
@@ -197,6 +198,58 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 991572825393812503, guid: 42959044f3111f94a91977986074d3a4, type: 3}
   m_PrefabInstance: {fileID: 2745454394474351093}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &805382014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 805382015}
+  - component: {fileID: 805382016}
+  m_Layer: 0
+  m_Name: ObjectPooling
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &805382015
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805382014}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 318843496}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &805382016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805382014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 039f6f74d77350e4a955fa6f7368c88c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Com.Voobox.Framework.ObjectPooling::Com.Voobox.Framework.ObjectPooling.ObjectPooler
+  m_poolsToPreWarm:
+  - m_assetReference:
+      m_AssetGUID: b97eea6a477b3df4a96b3181d2ff9fa9
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    m_preWarmAmount: 3
 --- !u!4 &1194680751 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7854175380731209539, guid: 4f1caf8ef86110e469a00ba58a2fc66b, type: 3}

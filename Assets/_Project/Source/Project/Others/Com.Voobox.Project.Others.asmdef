@@ -1,7 +1,11 @@
 {
     "name": "Com.Voobox.Project.Others",
     "rootNamespace": "Com.Voobox.Project.Others",
-    "references": [],
+    "references": [
+        "GUID:58c5dc9e89169f549b8288057a5c8718",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
