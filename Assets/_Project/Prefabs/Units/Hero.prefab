@@ -100,6 +100,13 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  m_sfxAttackEventReference:
+    Guid:
+      Data1: -1381125593
+      Data2: 1160671233
+      Data3: 128240514
+      Data4: -1537537467
+    Path: event:/attack
 --- !u!1 &786086054130379980
 GameObject:
   m_ObjectHideFlags: 0
@@ -5187,6 +5194,13 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  m_sfxAttackEventReference:
+    Guid:
+      Data1: -1381125593
+      Data2: 1160671233
+      Data3: 128240514
+      Data4: -1537537467
+    Path: event:/attack
 --- !u!1 &6276252160354315763
 GameObject:
   m_ObjectHideFlags: 0
@@ -10181,6 +10195,13 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  m_sfxAttackEventReference:
+    Guid:
+      Data1: -1381125593
+      Data2: 1160671233
+      Data3: 128240514
+      Data4: -1537537467
+    Path: event:/attack
 --- !u!1 &7766403067532229784
 GameObject:
   m_ObjectHideFlags: 0
@@ -10554,3 +10575,10 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  m_sfxAttackEventReference:
+    Guid:
+      Data1: -1381125593
+      Data2: 1160671233
+      Data3: 128240514
+      Data4: -1537537467
+    Path: event:/attack

@@ -9,8 +9,8 @@ namespace Com.Voobox.Framework.ObjectPooling
     {
         [SerializeField] private List<PoolConfiguration> m_poolsToPreWarm;
 
-        private Dictionary<object, Queue<GameObject>> m_poolDictionary = new Dictionary<object, Queue<GameObject>>();
-        private Dictionary<object, Transform> m_poolParents = new Dictionary<object, Transform>();
+        private readonly Dictionary<object, Queue<GameObject>> m_poolDictionary = new Dictionary<object, Queue<GameObject>>();
+        private readonly Dictionary<object, Transform> m_poolParents = new Dictionary<object, Transform>();
 
         public static ObjectPooler Instance { get; private set; }
 
