@@ -1,6 +1,7 @@
 ﻿using System;
 using Com.Voobox.Project.Data;
 using Cysharp.Threading.Tasks;
+using FMODUnity;
 using UnityEngine;
 
 namespace Com.Voobox.Project.Component
@@ -34,6 +35,13 @@ namespace Com.Voobox.Project.Component
         }
 
         public void Jump()
+        {
+            m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, 0);
+            m_rigidbody2D.AddForce(Vector2.up * m_movementData.JumpForce, ForceMode2D.Impulse);
+            RuntimeManager.PlayOneShot(m_movementData.SFXJumpEventReference);
+        }
+
+        public void PogoJump()
         {
             m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, 0);
             m_rigidbody2D.AddForce(Vector2.up * m_movementData.JumpForce, ForceMode2D.Impulse);

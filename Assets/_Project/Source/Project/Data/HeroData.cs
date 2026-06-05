@@ -1,6 +1,7 @@
 ﻿using System;
 using ArtificeToolkit.Attributes;
 using Com.Voobox.Project.Others;
+using FMODUnity;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ namespace Com.Voobox.Project.Data
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_speed;
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_jumpForce;
         [SerializeField, FoldoutGroup("Movement Setup")] private LayerMask m_groundLayer;
+        [SerializeField, FoldoutGroup("Movement Setup")] private EventReference m_sfxJumpEventReference;
 
         [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_smoothSpeed; 
         [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_screenShakeForce;
@@ -38,6 +40,7 @@ namespace Com.Voobox.Project.Data
 
         public float DashCooldown => m_dashCooldown;
         public CinemachinePositionComposer PositionComposer { get; set; }
+        public EventReference SFXJumpEventReference => m_sfxJumpEventReference;
         public Rigidbody2D Rigidbody2D { get; set; }
 
         public float JumpForce => m_jumpForce;
