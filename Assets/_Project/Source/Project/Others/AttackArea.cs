@@ -1,6 +1,7 @@
 using System;
 using Com.Voobox.Framework.ObjectPooling;
 using Cysharp.Threading.Tasks;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -11,6 +12,7 @@ namespace Com.Voobox.Project.Others//TODO
     {
         [SerializeField] private LayerMask m_targetLayer;
         [SerializeField] private AssetReferenceGameObject m_vfxImpactAssetReference;
+        [SerializeField] public EventReference m_sfxAttackEventReference;
 
         private Collider2D m_collider;
 
@@ -25,6 +27,9 @@ namespace Com.Voobox.Project.Others//TODO
         public void ToggleArea(bool isActive)
         {
             m_collider.enabled = isActive;
+
+            if(isActive)
+                RuntimeManager.PlayOneShot(m_sfxAttackEventReference, transform.position);
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
