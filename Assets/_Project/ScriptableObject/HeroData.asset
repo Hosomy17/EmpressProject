@@ -17,6 +17,13 @@ MonoBehaviour:
     m_dashForce: 20
     m_dashDuration: 0.2
     m_dashCooldown: 1
+    m_sfxDashEventReference:
+      Guid:
+        Data1: -749900919
+        Data2: 1184394497
+        Data3: 345377724
+        Data4: 720310668
+      Path: event:/dash
     m_speed: 6
     m_jumpForce: 10
     m_groundLayer:

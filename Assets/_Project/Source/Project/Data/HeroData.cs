@@ -15,6 +15,7 @@ namespace Com.Voobox.Project.Data
         [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashForce;
         [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashDuration;
         [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashCooldown;
+        [SerializeField, FoldoutGroup("Dash Setup")] private EventReference m_sfxDashEventReference;
 
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_speed;
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_jumpForce;
@@ -39,6 +40,7 @@ namespace Com.Voobox.Project.Data
         public float DashDuration => m_dashDuration;
 
         public float DashCooldown => m_dashCooldown;
+        public EventReference SFXDashEventReference => m_sfxDashEventReference;
         public CinemachinePositionComposer PositionComposer { get; set; }
         public EventReference SFXJumpEventReference => m_sfxJumpEventReference;
         public Rigidbody2D Rigidbody2D { get; set; }
