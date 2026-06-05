@@ -1,5 +1,8 @@
 using System;
+using Com.Voobox.Framework.ObjectPooling;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Com.Voobox.Project.Others//TODO
 {
@@ -7,7 +10,7 @@ namespace Com.Voobox.Project.Others//TODO
     public class AttackArea : MonoBehaviour 
     {
         [SerializeField] private LayerMask m_targetLayer;
-        [SerializeField] private GameObject m_vfxImpactPrefab;
+        [SerializeField] private AssetReferenceGameObject m_vfxImpactAssetReference;
 
         private Collider2D m_collider;
 
@@ -37,9 +40,9 @@ namespace Com.Voobox.Project.Others//TODO
 
         private void CallVfxImpact(Vector2 position)
         {
-            if(m_vfxImpactPrefab == null) return;
+            if(m_vfxImpactAssetReference == null) return;
 
-            Instantiate(m_vfxImpactPrefab, position, Quaternion.identity);
+            ObjectPooler.Instance.Spawn(m_vfxImpactAssetReference, position, Quaternion.identity).Forget();
         }
     }
 }
