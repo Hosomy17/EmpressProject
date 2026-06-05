@@ -1,7 +1,7 @@
 {
-    "name": "Com.Voobox.Project.Scripts",
-    "rootNamespace": "Com.Voobox.Project.Scripts",
-    "references": ["GUID:b49857e2eea66644a914e6b6b9bffb6a","GUID:e21bcbae1a7445647837a3686c8f1571","GUID:c353ec921a66f054aa0e679f073e72e4"],
+    "name": "Com.Voobox.Project.Events.SteamworksEvents",
+    "rootNamespace": "Com.Voobox.Project.Events.SteamworksEvents",
+    "references": ["GUID:b49857e2eea66644a914e6b6b9bffb6a"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
