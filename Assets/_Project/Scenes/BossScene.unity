@@ -595,10 +595,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1431081164}
     m_Modifications:
+    - target: {fileID: 523521510584988651, guid: 4f1caf8ef86110e469a00ba58a2fc66b, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 7300916959389031889}
     - target: {fileID: 2285329886383516850, guid: 4f1caf8ef86110e469a00ba58a2fc66b, type: 3}
       propertyPath: m_positionComposer
       value: 
       objectReference: {fileID: 1794194859}
+    - target: {fileID: 4670530176910369270, guid: 4f1caf8ef86110e469a00ba58a2fc66b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4670530176910369270, guid: 4f1caf8ef86110e469a00ba58a2fc66b, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294901854
+      objectReference: {fileID: 0}
     - target: {fileID: 7766403067532229784, guid: 4f1caf8ef86110e469a00ba58a2fc66b, type: 3}
       propertyPath: m_Name
       value: Hero
@@ -766,6 +778,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 256cfe9271d5b5c47a41168c8bbe4cda, type: 3}
+--- !u!20 &7300916959389031889 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 959639956181813660, guid: 256cfe9271d5b5c47a41168c8bbe4cda, type: 3}
+  m_PrefabInstance: {fileID: 7300916959389031888}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
