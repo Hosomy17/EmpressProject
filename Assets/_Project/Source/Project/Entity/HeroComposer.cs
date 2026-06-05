@@ -3,6 +3,7 @@ using Com.Voobox.Project.Component;
 using Com.Voobox.Project.Data;
 using Com.Voobox.Project.Others;
 using Cysharp.Threading.Tasks;
+using FMODUnity;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +11,7 @@ using UnityEngine.InputSystem;
 namespace Com.Voobox.Project.Entity
 {
     [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(Animator))]
-    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(SpriteRenderer), typeof(StudioEventEmitter))]
     public class HeroComposer : MonoBehaviour
     {
         [SerializeField]
@@ -45,6 +46,7 @@ namespace Com.Voobox.Project.Entity
         private Vector2 m_moveInput;
         private Collider2D m_boxCollider;
         private Rigidbody2D m_rigidbody2D;
+        private StudioEventEmitter m_sfxRunEmitter;
 
         private float m_runParticleTimer = 0f;
         private bool m_wasGrounded = true;
@@ -67,6 +69,7 @@ namespace Com.Voobox.Project.Entity
             m_boxCollider = GetComponent<BoxCollider2D>();
             var animator = GetComponent<Animator>();
             var renderer = GetComponent<SpriteRenderer>();
+            m_sfxRunEmitter = GetComponent<StudioEventEmitter>();
 
             m_inputActions = new InputSystemActions();
             m_inputActions.Player.Move.performed += ctx => m_moveInput = ApplyDeadZone(axis: ctx.ReadValue<Vector2>());
@@ -188,6 +191,12 @@ namespace Com.Voobox.Project.Entity
             if (!CanRun()) return;
 
             m_movementComponent.Run(m_moveInput.x);
+
+            var value = 0;
+            if (m_isGrounded && m_moveInput.x != 0)
+                value = 1;
+
+            m_sfxRunEmitter.SetParameter("run_velocity", value);
         }
 
         private bool CanRun()
