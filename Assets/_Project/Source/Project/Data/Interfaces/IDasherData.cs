@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FMODUnity;
+using UnityEngine;
 
 namespace Com.Voobox.Project.Data
 {
@@ -7,6 +8,7 @@ namespace Com.Voobox.Project.Data
         public float DashForce { get; }
         public float DashDuration { get; }
         public float DashCooldown { get; }
+        public EventReference SFXDashEventReference { get; }
         public Rigidbody2D Rigidbody2D { get; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Com.Voobox.Project.Data;
 using Cysharp.Threading.Tasks;
+using FMODUnity;
 using UnityEngine;
 
 namespace Com.Voobox.Project.Component
@@ -24,6 +25,7 @@ namespace Com.Voobox.Project.Component
             var originalGravity = m_rigidbody2D.gravityScale;
             m_rigidbody2D.gravityScale = 0f;
             m_rigidbody2D.linearVelocity = new Vector2(dashDir * m_dasherData.DashForce, 0f);
+            RuntimeManager.PlayOneShot(m_dasherData.SFXDashEventReference);
 
             await UniTask.Delay(TimeSpan.FromSeconds(m_dasherData.DashDuration), cancellationToken: m_taskDash.GetNewToken()).SuppressCancellationThrow();
 

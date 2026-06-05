@@ -220,7 +220,7 @@ namespace Com.Voobox.Project.Entity
             await DoHitStop();
             m_hasJump = true;
             m_isJumping = false;
-            m_movementComponent.Jump();
+            m_movementComponent.PogoJump();
             m_screenShakerComponent.GenerateImpulse();
         }
 
