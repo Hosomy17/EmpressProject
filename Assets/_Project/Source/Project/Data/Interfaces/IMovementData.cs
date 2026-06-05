@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FMODUnity;
+using UnityEngine;
 
 namespace Com.Voobox.Project.Data
 {
@@ -9,6 +10,7 @@ namespace Com.Voobox.Project.Data
         public float RecoilBackForce { get; }
         public float RecoilUpForce { get; }
         public float RecoilDuration { get; }
+        public EventReference SFXJumpEventReference { get; }
         public Rigidbody2D Rigidbody2D { get; }
     }
 }
