@@ -42,3 +42,6 @@ MonoBehaviour:
     m_recoilBackForce: 2
     m_recoilUpForce: 1
     m_recoilDuration: 0.2
+    m_hurtLayer:
+      serializedVersion: 2
+      m_Bits: 128

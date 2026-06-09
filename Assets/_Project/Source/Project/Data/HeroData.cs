@@ -29,6 +29,8 @@ namespace Com.Voobox.Project.Data
         [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_recoilUpForce;
         [SerializeField, FoldoutGroup("ScreenShake Setup")] private float m_recoilDuration;
 
+        [SerializeField] private LayerMask m_hurtLayer;
+
         public float AttackDuration => m_attackDuration;
         public AttackArea AttackUp { get; set; }
         public AttackArea AttackDown { get; set; }
@@ -63,5 +65,7 @@ namespace Com.Voobox.Project.Data
         public float RecoilUpForce => m_recoilUpForce;
 
         public float RecoilDuration => m_recoilDuration;
+
+        public LayerMask HurtLayer => m_hurtLayer;
     }
 }
