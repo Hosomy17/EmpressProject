@@ -6,12 +6,12 @@ using UnityEngine;
 
 namespace Com.Voobox.Project.Component
 {
-    public class MovementComponent
+    public class Movement2DComponent
     {
         private readonly IMovementData m_movementData;
         private readonly Rigidbody2D m_rigidbody2D;
 
-        public MovementComponent(IMovementData movementData)
+        public Movement2DComponent(IMovementData movementData)
         {
             m_movementData = movementData;
             m_rigidbody2D = movementData.Rigidbody2D;

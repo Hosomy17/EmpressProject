@@ -11,8 +11,9 @@ namespace Com.Voobox.Project.Component
         private readonly int m_dash = Animator.StringToHash("Dash");
         private readonly int m_airVelocity = Animator.StringToHash("AirVelocity");
         private readonly int m_speed = Animator.StringToHash("Speed");
+        private readonly int m_ghost = Animator.StringToHash("Ghost");
         private readonly Animator m_animator;
-        
+
         private SpriteRenderer m_renderer;
 
         public HeroAnimatorComponent(Animator animator, SpriteRenderer renderer)
@@ -41,16 +42,21 @@ namespace Com.Voobox.Project.Component
             m_animator.SetFloat(m_airVelocity, airVelocity);
         }
 
+        public void SetGhost(bool isGhost)
+        {
+            m_animator.SetBool(m_ghost, isGhost);
+        }
+
         public void SetAttackFront(bool isAttacking)
         {
             m_animator.SetBool(m_attackFront, isAttacking);
         }
-        
+
         public void SetAttackUp(bool isAttacking)
         {
             m_animator.SetBool(m_attackUp, isAttacking);
         }
-        
+
         public void SetAttackDown(bool isAttacking)
         {
             m_animator.SetBool(m_attackDown, isAttacking);

@@ -1,3 +1,4 @@
+using System;
 using ArtificeToolkit.Attributes;
 using Com.Voobox.Project.Component;
 using Com.Voobox.Project.Data;
@@ -35,7 +36,7 @@ namespace Com.Voobox.Project.Entity
         [SerializeField] private ParticleSystem m_jumpParticles;
         [SerializeField] private ParticleSystem m_landParticles;
 
-        private MovementComponent m_movementComponent;
+        private Movement2DComponent m_movement2DComponent;
         private DasherComponent m_dasherComponent;
         private AttackerComponent m_attackerComponent;
         private HeroAnimatorComponent m_heroAnimatorComponent;
@@ -56,6 +57,7 @@ namespace Com.Voobox.Project.Entity
         private bool m_isAttacking = false;
         private bool m_isRecoiling = false;
         private bool m_isHitStoping = false;
+        private bool m_isGhosting = false;
 
         private bool m_isJumping = false;
         private bool m_hasJump = true;
@@ -88,7 +90,7 @@ namespace Com.Voobox.Project.Entity
             m_heroData.HeroData.Rigidbody2D = m_rigidbody2D;
             m_heroData.HeroData.PositionComposer = m_positionComposer;
 
-            m_movementComponent = new MovementComponent(m_heroData.HeroData);
+            m_movement2DComponent = new Movement2DComponent(m_heroData.HeroData);
             m_dasherComponent = new DasherComponent(m_heroData.HeroData);
             m_attackerComponent = new AttackerComponent(m_heroData.HeroData);
             m_heroAnimatorComponent = new HeroAnimatorComponent(animator, renderer);//TODO
@@ -163,6 +165,49 @@ namespace Com.Voobox.Project.Entity
             return new Vector2(x, y);
         }
 
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (m_isGhosting || ((1 << collision.gameObject.layer) & m_heroData.HeroData.HurtLayer) == 0) return;
+
+            var direction = collision.transform.position.x > transform.position.x ? -1 : 1;
+            TakeDamage(direction);
+        }
+
+        private void TakeDamage(int direction)
+        {
+            GhostTimeTask().Forget();
+            Knockback(direction).Forget();
+        }
+
+        private async UniTask GhostTimeTask()
+        {
+            m_isGhosting = true;
+            m_heroAnimatorComponent.SetGhost(true);
+            await UniTask.Delay(TimeSpan.FromSeconds(3));
+            m_heroAnimatorComponent.SetGhost(false);
+            m_isGhosting = false;
+
+            CheckDamage();
+        }
+
+        private async UniTask Knockback(int direction)
+        {
+            m_isRecoiling = true;
+            await m_movement2DComponent.Recoil(2 * direction);
+            m_isRecoiling = false;
+        }
+
+        private void CheckDamage()
+        {
+            var myCollider = GetComponent<Collider2D>();
+
+            if (!myCollider.IsTouchingLayers(m_heroData.HeroData.HurtLayer)) return;
+
+            var enemyCollider = Physics2D.OverlapBox(transform.position, myCollider.bounds.size, 0f, m_heroData.HeroData.HurtLayer);
+            var direction = enemyCollider.transform.position.x > transform.position.x ? -1 : 1;
+            TakeDamage(direction);
+        }
+
         #region Movement Behaviour
 
         private void HandleRunParticles()
@@ -190,7 +235,7 @@ namespace Com.Voobox.Project.Entity
         {
             if (!CanRun()) return;
 
-            m_movementComponent.Run(m_moveInput.x);
+            m_movement2DComponent.Run(m_moveInput.x);
 
             var value = 0;
             if (m_isGrounded && m_moveInput.x != 0)
@@ -210,7 +255,7 @@ namespace Com.Voobox.Project.Entity
 
             m_hasJump = false;
             m_isJumping = true;
-            m_movementComponent.Jump();
+            m_movement2DComponent.Jump();
 
             if (m_jumpParticles != null)
                 m_jumpParticles.Play();
@@ -219,7 +264,7 @@ namespace Com.Voobox.Project.Entity
         private void JumpCut(InputAction.CallbackContext callbackContext)
         {
             if (m_isJumping && m_rigidbody2D.linearVelocity.y > 0)
-                m_movementComponent.JumpCut();
+                m_movement2DComponent.JumpCut();
 
             m_isJumping = false;
         }
@@ -229,7 +274,7 @@ namespace Com.Voobox.Project.Entity
             await DoHitStop();
             m_hasJump = true;
             m_isJumping = false;
-            m_movementComponent.PogoJump();
+            m_movement2DComponent.PogoJump();
             m_screenShakerComponent.GenerateImpulse();
         }
 
@@ -304,7 +349,7 @@ namespace Com.Voobox.Project.Entity
             DoHitStop().Forget();
 
             if (!m_isGrounded)
-                m_movementComponent.StopVerticalVelocity();
+                m_movement2DComponent.StopVerticalVelocity();
         }
 
         private async UniTaskVoid Recoil(bool isDirectionRight)
@@ -317,7 +362,7 @@ namespace Com.Voobox.Project.Entity
             var recoilDirection = isDirectionRight ? 1f : -1f;
 
             m_screenShakerComponent.ShakeDirection(-recoilDirection);
-            await m_movementComponent.Recoil(recoilDirection);
+            await m_movement2DComponent.Recoil(recoilDirection);
 
             m_isRecoiling = false;
         }
