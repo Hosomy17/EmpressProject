@@ -76,7 +76,7 @@ namespace Com.Voobox.Project.Entity
             m_inputActions = new InputSystemActions();
             m_inputActions.Player.Move.performed += ctx => m_moveInput = ApplyDeadZone(axis: ctx.ReadValue<Vector2>());
             m_inputActions.Player.Move.canceled += _ => m_moveInput = Vector2.zero;
-            m_inputActions.Player.Jump.performed += Jump;
+            m_inputActions.Player.Jump.performed += TryJump;
             m_inputActions.Player.Jump.canceled += JumpCut;
             m_inputActions.Player.Dash.performed += _ => Dash().Forget();
             m_inputActions.Player.Attack.performed += _ => HandleAttack().Forget();
@@ -133,12 +133,17 @@ namespace Com.Voobox.Project.Entity
             m_hasJump = true;
             m_isJumping = false;
 
+            if(m_movement2DComponent.IsJumpBufferActive)
+                Jump();
+
             if (m_wasGrounded) return;
 
             if (m_landParticles != null)
             {
                 m_landParticles.Play();
             }
+
+            
         }
 
         private void UpdateAnimations()
@@ -249,10 +254,19 @@ namespace Com.Voobox.Project.Entity
             return !m_isDashing && !m_isRecoiling;
         }
 
-        private void Jump(InputAction.CallbackContext callbackContext)
+        private void TryJump(InputAction.CallbackContext callbackContext)
         {
-            if (!CanJump()) return;
+            if (!CanJump())
+            {
+                m_movement2DComponent.StartJumpBuffer().Forget();
+                return;
+            }
 
+            Jump();
+        }
+
+        private void Jump()
+        {
             m_hasJump = false;
             m_isJumping = true;
             m_movement2DComponent.Jump();
