@@ -26,6 +26,7 @@ MonoBehaviour:
       Path: event:/dash
     m_speed: 6
     m_jumpForce: 10
+    m_jumpBufferTime: 0.1
     m_groundLayer:
       serializedVersion: 2
       m_Bits: 64

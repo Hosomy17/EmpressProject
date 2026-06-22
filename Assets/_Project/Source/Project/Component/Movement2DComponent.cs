@@ -11,6 +11,10 @@ namespace Com.Voobox.Project.Component
         private readonly IMovementData m_movementData;
         private readonly Rigidbody2D m_rigidbody2D;
 
+        private readonly TaskHandle m_taskJumpBuffer = new();
+
+        public bool IsJumpBufferActive { get; private set; }
+
         public Movement2DComponent(IMovementData movementData)
         {
             m_movementData = movementData;
@@ -50,6 +54,13 @@ namespace Com.Voobox.Project.Component
         public void JumpCut()
         {
             m_rigidbody2D.linearVelocity = new Vector2(m_rigidbody2D.linearVelocity.x, m_rigidbody2D.linearVelocity.y * 0.5f);
+        }
+
+        public async UniTaskVoid StartJumpBuffer()
+        {
+            IsJumpBufferActive = true;
+            await UniTask.Delay(TimeSpan.FromSeconds(m_movementData.JumpBufferTime), delayTiming: PlayerLoopTiming.Update, cancellationToken: m_taskJumpBuffer.GetNewToken()).SuppressCancellationThrow();
+            IsJumpBufferActive = false;
         }
     }
 }

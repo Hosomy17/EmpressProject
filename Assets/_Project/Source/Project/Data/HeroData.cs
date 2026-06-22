@@ -19,6 +19,7 @@ namespace Com.Voobox.Project.Data
 
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_speed;
         [SerializeField, FoldoutGroup("Movement Setup")] private float m_jumpForce;
+        [SerializeField, FoldoutGroup("Movement Setup")] private float m_jumpBufferTime;
         [SerializeField, FoldoutGroup("Movement Setup")] private LayerMask m_groundLayer;
         [SerializeField, FoldoutGroup("Movement Setup")] private EventReference m_sfxJumpEventReference;
 
@@ -48,6 +49,7 @@ namespace Com.Voobox.Project.Data
         public Rigidbody2D Rigidbody2D { get; set; }
 
         public float JumpForce => m_jumpForce;
+        public float JumpBufferTime => m_jumpBufferTime;
 
         public LayerMask GroundLayer => m_groundLayer;
 
