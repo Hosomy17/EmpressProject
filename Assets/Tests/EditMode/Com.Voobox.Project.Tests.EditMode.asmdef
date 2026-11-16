@@ -1,0 +1,30 @@
+{
+    "name": "Com.Voobox.Project.Tests.EditMode",
+    "rootNamespace": "Com.Voobox.Project.Tests.EditMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Com.Voobox.Framework.Events",
+        "Com.Voobox.Project.Data",
+        "Com.Voobox.Project.Component",
+        "Com.Voobox.Project.Events.HeroEvents",
+        "Com.Voobox.Project.Events.BossEvents",
+        "Com.Voobox.Project.Entity",
+        "Com.Voobox.Project.Systems"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
