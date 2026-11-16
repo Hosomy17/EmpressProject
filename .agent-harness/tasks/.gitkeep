@@ -1,0 +1,3 @@
+# This file ensures the tasks directory is tracked by Git.
+# Task specification files (TASK-XXX-name.md) are created here during planning
+# and deleted upon task completion (DONE status).
