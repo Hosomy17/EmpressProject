@@ -1,7 +1,9 @@
 using System;
 using ArtificeToolkit.Attributes;
+using Com.Voobox.Framework.Events;
 using Com.Voobox.Project.Component;
 using Com.Voobox.Project.Data;
+using Com.Voobox.Project.Events.HeroEvents;
 using Com.Voobox.Project.Others;
 using Cysharp.Threading.Tasks;
 using FMODUnity;
@@ -42,6 +44,7 @@ namespace Com.Voobox.Project.Entity
         private HeroAnimatorComponent m_heroAnimatorComponent;
         private FrameFreezerComponent m_frameFreezerComponent;
         private ScreenShakerComponent m_screenShakerComponent;
+        private HealthComponent m_healthComponent;
 
         private InputSystemActions m_inputActions;
         private Vector2 m_moveInput;
@@ -49,8 +52,9 @@ namespace Com.Voobox.Project.Entity
         private Rigidbody2D m_rigidbody2D;
         private StudioEventEmitter m_sfxRunEmitter;
 
+        private HeroData Data => m_heroData.HeroData;
+
         private float m_runParticleTimer = 0f;
-        private bool m_wasGrounded = true;
 
         private bool m_isFacingRight = true;
         private bool m_isGrounded = true;
@@ -82,20 +86,21 @@ namespace Com.Voobox.Project.Entity
             m_inputActions.Player.Attack.performed += _ => HandleAttack().Forget();
 
             m_heroData = Instantiate(m_heroData);
-            m_heroData.HeroData.AttackUp = m_attackUpArea;
-            m_heroData.HeroData.AttackDown = m_attackDownArea;
-            m_heroData.HeroData.AttackLeft = m_attackLeftArea;
-            m_heroData.HeroData.AttackRight = m_attackRightArea;
-            m_heroData.HeroData.ImpulseSource = GetComponent<CinemachineImpulseSource>();
-            m_heroData.HeroData.Rigidbody2D = m_rigidbody2D;
-            m_heroData.HeroData.PositionComposer = m_positionComposer;
+            Data.AttackUp = m_attackUpArea;
+            Data.AttackDown = m_attackDownArea;
+            Data.AttackLeft = m_attackLeftArea;
+            Data.AttackRight = m_attackRightArea;
+            Data.ImpulseSource = GetComponent<CinemachineImpulseSource>();
+            Data.Rigidbody2D = m_rigidbody2D;
+            Data.PositionComposer = m_positionComposer;
 
-            m_movement2DComponent = new Movement2DComponent(m_heroData.HeroData);
-            m_dasherComponent = new DasherComponent(m_heroData.HeroData);
-            m_attackerComponent = new AttackerComponent(m_heroData.HeroData);
+            m_movement2DComponent = new Movement2DComponent(Data);
+            m_dasherComponent = new DasherComponent(Data);
+            m_attackerComponent = new AttackerComponent(Data);
             m_heroAnimatorComponent = new HeroAnimatorComponent(animator, renderer);//TODO
             m_frameFreezerComponent = new FrameFreezerComponent();//TODO
-            m_screenShakerComponent = new ScreenShakerComponent(m_heroData.HeroData);
+            m_screenShakerComponent = new ScreenShakerComponent(Data);
+            m_healthComponent = new HealthComponent(Data);
         }
 
         private void Start()
@@ -125,8 +130,8 @@ namespace Com.Voobox.Project.Entity
 
         private void CheckGround()
         {
-            m_wasGrounded = m_isGrounded;
-            var hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, m_heroData.HeroData.GroundLayer);
+            var wasGrounded = m_isGrounded;
+            var hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, Data.GroundLayer);
             m_isGrounded = hit.collider != null && m_rigidbody2D.linearVelocity.y <= 0.01f;
 
             if (!m_isGrounded) return;
@@ -136,14 +141,12 @@ namespace Com.Voobox.Project.Entity
             if(m_movement2DComponent.IsJumpBufferActive)
                 Jump();
 
-            if (m_wasGrounded) return;
+            if (wasGrounded) return;
 
             if (m_landParticles != null)
             {
                 m_landParticles.Play();
             }
-
-            
         }
 
         private void UpdateAnimations()
@@ -172,16 +175,30 @@ namespace Com.Voobox.Project.Entity
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (m_isGhosting || ((1 << collision.gameObject.layer) & m_heroData.HeroData.HurtLayer) == 0) return;
+            if (m_healthComponent.IsDead) return;
+            if (m_isGhosting || ((1 << collision.gameObject.layer) & Data.HurtLayer) == 0) return;
+            if (m_boxCollider == null || !m_boxCollider.IsTouching(collision)) return;
 
-            var direction = collision.transform.position.x > transform.position.x ? -1 : 1;
-            TakeDamage(direction);
+            TakeDamage(GetKnockbackDirection(collision));
         }
 
         private void TakeDamage(int direction)
         {
+            m_healthComponent.TakeDamage();
+
+            if (m_healthComponent.IsDead)
+            {
+                Die();
+                return;
+            }
+
             GhostTimeTask().Forget();
-            Knockback(direction).Forget();
+            ApplyRecoilAsync(2 * direction).Forget();
+        }
+
+        private void Die()
+        {
+            EventBus.Notify(new HeroDiedEvent());
         }
 
         private async UniTask GhostTimeTask()
@@ -195,22 +212,28 @@ namespace Com.Voobox.Project.Entity
             CheckDamage();
         }
 
-        private async UniTask Knockback(int direction)
+        private async UniTask ApplyRecoilAsync(float direction)
         {
             m_isRecoiling = true;
-            await m_movement2DComponent.Recoil(2 * direction);
+            await m_movement2DComponent.Recoil(direction);
             m_isRecoiling = false;
+        }
+
+        private int GetKnockbackDirection(Collider2D other)
+        {
+            if (other == null) return 1;
+            return other.transform.position.x > transform.position.x ? -1 : 1;
         }
 
         private void CheckDamage()
         {
-            var myCollider = GetComponent<Collider2D>();
+            if (m_healthComponent.IsDead) return;
+            if (m_boxCollider == null || !m_boxCollider.IsTouchingLayers(Data.HurtLayer)) return;
 
-            if (!myCollider.IsTouchingLayers(m_heroData.HeroData.HurtLayer)) return;
+            var enemyCollider = Physics2D.OverlapBox(transform.position, m_boxCollider.bounds.size, 0f, Data.HurtLayer);
+            if (enemyCollider == null) return;
 
-            var enemyCollider = Physics2D.OverlapBox(transform.position, myCollider.bounds.size, 0f, m_heroData.HeroData.HurtLayer);
-            var direction = enemyCollider.transform.position.x > transform.position.x ? -1 : 1;
-            TakeDamage(direction);
+            TakeDamage(GetKnockbackDirection(enemyCollider));
         }
 
         #region Movement Behaviour
@@ -256,7 +279,7 @@ namespace Com.Voobox.Project.Entity
 
         private void TryJump(InputAction.CallbackContext callbackContext)
         {
-            if (!CanJump())
+            if (!m_hasJump)
             {
                 m_movement2DComponent.StartJumpBuffer().Forget();
                 return;
@@ -292,18 +315,13 @@ namespace Com.Voobox.Project.Entity
             m_screenShakerComponent.GenerateImpulse();
         }
 
-        private bool CanJump()
-        {
-            return m_hasJump;
-        }
-
         #endregion
 
         #region Dash Behaviour
 
         private async UniTaskVoid Dash()
         {
-            if (!CanDash()) return;
+            if (!m_hasDash) return;
             m_attackerComponent.StopAttack();
 
             m_hasDash = false;
@@ -316,11 +334,6 @@ namespace Com.Voobox.Project.Entity
             await m_dasherComponent.DashCooldown();
             
             m_hasDash = true;
-        }
-
-        private bool CanDash()
-        {
-            return m_hasDash;
         }
 
         #endregion
@@ -371,14 +384,11 @@ namespace Com.Voobox.Project.Entity
             if (m_isRecoiling) return;
 
             await DoHitStop();
-            m_isRecoiling = true;
 
             var recoilDirection = isDirectionRight ? 1f : -1f;
 
             m_screenShakerComponent.ShakeDirection(-recoilDirection);
-            await m_movement2DComponent.Recoil(recoilDirection);
-
-            m_isRecoiling = false;
+            await ApplyRecoilAsync(recoilDirection);
         }
 
         private async UniTask DoHitStop(float duration = 0.05f, float scale = 0.05f)

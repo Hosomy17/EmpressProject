@@ -175,6 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c5ded1f6a994afa9ffc948f95c29702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Com.Voobox.Project.Entity::Com.Voobox.Project.Entity.BossComposer
+  m_bossData: {fileID: 11400000, guid: b206d5bf86ddf6342be71b85ece06784, type: 2}
 --- !u!1 &8903487385513256833
 GameObject:
   m_ObjectHideFlags: 0

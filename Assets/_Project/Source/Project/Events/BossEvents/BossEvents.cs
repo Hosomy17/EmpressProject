@@ -5,4 +5,8 @@ namespace Com.Voobox.Project.Events.BossEvents
     public class InitializeBossEvent : IEvent
     {
     }
+
+    public class BossDiedEvent : IEvent
+    {
+    }
 }

@@ -13,7 +13,8 @@
         "GUID:bb2b36e553b3dcb4f83b3babae58fa1a",
         "GUID:b49857e2eea66644a914e6b6b9bffb6a",
         "GUID:e21bcbae1a7445647837a3686c8f1571",
-        "GUID:0c752da273b17c547ae705acf0f2adf2"
+        "GUID:0c752da273b17c547ae705acf0f2adf2",
+        "Com.Voobox.Project.Events.HeroEvents"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

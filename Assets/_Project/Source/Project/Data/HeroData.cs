@@ -8,8 +8,10 @@ using UnityEngine;
 namespace Com.Voobox.Project.Data
 {
     [Serializable]
-    public class HeroData : IAttackerData, IDasherData, IMovementData, IScreenShakerData
+    public class HeroData : IAttackerData, IDasherData, IMovementData, IScreenShakerData, IHealthData
     {
+        [SerializeField, FoldoutGroup("Health Setup")] private int m_maxHitPoints;
+
         [SerializeField, FoldoutGroup("Attack Setup")] private float m_attackDuration;
 
         [SerializeField, FoldoutGroup("Dash Setup")] private float m_dashForce;
@@ -69,5 +71,6 @@ namespace Com.Voobox.Project.Data
         public float RecoilDuration => m_recoilDuration;
 
         public LayerMask HurtLayer => m_hurtLayer;
+        public int MaxHitPoints => m_maxHitPoints;
     }
 }

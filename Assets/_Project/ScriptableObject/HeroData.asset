@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HeroData
   m_EditorClassIdentifier: Com.Voobox.Project.Data::Com.Voobox.Project.Data.HeroDataScriptableObject
   m_heroData:
+    m_maxHitPoints: 3
     m_attackDuration: 0.4
     m_dashForce: 20
     m_dashDuration: 0.2
