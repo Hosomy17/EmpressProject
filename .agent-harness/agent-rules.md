@@ -22,18 +22,26 @@ stateDiagram-v2
         Rejection --> [*]: Reject / Redesign Solution
     }
 
-    SoTValidation --> ActionPlanning: ConformanceVerified
-    
-    state ActionPlanning {
+    SoTValidation --> PlanAndDelegate: ConformanceVerified
+
+    state PlanAndDelegate {
+        [*] --> CreateTaskSpec: Clone task.template.md -> .agent-harness/tasks/TASK-XXX.md
+        CreateTaskSpec --> RegisterBoard: Add TODO entry in tasks-board.md
+        RegisterBoard --> AwaitPlanConsent: Pause for User Consent
+        AwaitPlanConsent --> DelegateToSubagent: User Approves Plan
+    }
+
+    DelegateToSubagent --> ExecutionSubagent: Subagent Claims Task (DOING)
+
+    state ExecutionSubagent {
         [*] --> SelectMechanism
         SelectMechanism --> UseSkill: Unity Skill Available
         SelectMechanism --> EditSource: Code/Asset Change Needed
         SelectMechanism --> EditorBatch: Scene/Asset Automation Needed
+        UseSkill --> VerificationGate: Skill Completed
+        EditSource --> VerificationGate: Source Saved
+        EditorBatch --> VerificationGate: Batch Executed
     }
-
-    UseSkill --> VerificationGate: Skill Completed
-    EditSource --> VerificationGate: Source Saved
-    EditorBatch --> VerificationGate: Batch Executed
 
     state VerificationGate {
         [*] --> AttestSoTConformance
@@ -42,14 +50,16 @@ stateDiagram-v2
         CompileCheck --> FailureTriage: Compilation Error
         RunEditModeTests --> RunPlayModeTests: EditMode Tests Green
         RunEditModeTests --> FailureTriage: EditMode Test Failed
-        RunPlayModeTests --> ValidationComplete: PlayMode Tests Green
+        RunPlayModeTests --> SubmitForReview: PlayMode Tests Green
         RunPlayModeTests --> FailureTriage: PlayMode Test Failed
         FailureTriage --> [*]: Fix Required
     }
 
-    VerificationGate --> ActionPlanning: Apply Fix
-    VerificationGate --> ReadyToCommit: ValidationComplete
-    ReadyToCommit --> [*]: Task Marked Done
+    VerificationGate --> ExecutionSubagent: Apply Fix
+    SubmitForReview --> TechLeadReview: Task Marked REVIEW (Await User Consent)
+    TechLeadReview --> ExecutionSubagent: Revisions Needed (DOING)
+    TechLeadReview --> ReadyToCommit: User Approves -> DONE & Purged
+    ReadyToCommit --> [*]: Task Complete
 ```
 
 ---
@@ -159,6 +169,16 @@ stateDiagram-v2
 * **Standard Operating Procedure**:
   - If changes impact project landscape, update [`.agent-harness/project-context.md`](file:///.agent-harness/project-context.md) (and the active Source of Truth, if applicable) to reflect current project reality before final task closeout.
 
+### Rule 11: Mandatory Plan-Then-Delegate Protocol (with User Approval Gates)
+* **Constraint**: For any implementation task (creating or modifying C# scripts, `.asmdef` files, Unity assets, prefabs, scenes, or packages), the primary agent **MUST** act strictly as **Planning Agent & Technical Lead** and **MUST NOT** edit `Assets/` or `Packages/` directly in its own context. Both **plan execution** (`TODO` → `DOING`) and **final completion** (`REVIEW` → `DONE`) require explicit user consent.
+* **Exemptions**: Read-only Q&A, codebase research, or explicit user instructions to execute directly without delegation.
+* **Standard Operating Procedure**:
+  1. **Plan**: Resolve all target file paths upfront and validate the design against [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md).
+  2. **Specify & Register (`TODO`)**: Clone [`.agent-harness/task.template.md`](file:///.agent-harness/task.template.md) into `.agent-harness/tasks/TASK-XXX-<name>.md` and register it on [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md) as `TODO`.
+  3. **Gate 1 — Pause for User Plan Consent**: Present the planned `TASK-XXX-<name>.md` to the user and **pause**. Do **not** delegate or start execution (`DOING`) until the user explicitly consents.
+  4. **Delegate (`DOING` → `REVIEW`)**: Upon user consent, spawn an Execution subagent (e.g., via `invoke_subagent`) with the task specification path as its assignment. The Execution subagent claims the task (`DOING`), implements changes, logs the SoT Conformance Attestation, runs the Unity CLI test gates, and moves the task to `REVIEW`.
+  5. **Gate 2 — Pause for User Review & Consent (`REVIEW` → `DONE`)**: Verify the diff, SoT attestation, and test results (`Logs/*-Results.xml`), present the `REVIEW` summary to the user, and **pause**. Wait for explicit user review and consent before marking `DONE`, purging `TASK-XXX-<name>.md`, and removing its row from `tasks-board.md`.
+
 ---
 
 ## 3. Multi-Agent Task Planning & Hand-off System
@@ -166,10 +186,10 @@ stateDiagram-v2
 ```mermaid
 stateDiagram-v2
     [*] --> TODO: Planning Agent generates spec in .agent-harness/tasks/
-    TODO --> DOING: Execution Agent claims task on tasks-board.md
+    TODO --> DOING: User consents & Execution Agent claims task on tasks-board.md
     DOING --> REVIEW: Code/Assets implemented & Unity CLI tests green
-    REVIEW --> DOING: Technical Lead requests revisions
-    REVIEW --> DONE: Technical Lead approves implementation
+    REVIEW --> DOING: User / Technical Lead requests revisions
+    REVIEW --> DONE: User consents & Technical Lead closes task
     state DONE {
         [*] --> PurgeFile: Delete .agent-harness/tasks/TASK-XXX.md
         PurgeFile --> UpdateBoard: Remove entry from tasks-board.md

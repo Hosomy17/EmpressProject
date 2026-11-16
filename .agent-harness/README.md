@@ -15,8 +15,14 @@ flowchart TD
         D --> E["Query Available Skills: 'npx skills list'"]
     end
 
-    subgraph S2["2. Execution Phase"]
-        E --> F{"Action Type Selection"}
+    subgraph S2["2. Planning & Delegation Phase (Primary Agent)"]
+        E --> P1["Create .agent-harness/tasks/TASK-XXX.md"]
+        P1 --> P2["Register TODO on tasks-board.md"]
+        P2 --> P3["Delegate to Execution Subagent"]
+    end
+
+    subgraph S3["3. Execution Phase (Subagent)"]
+        P3 --> F{"Action Type Selection"}
         F -->|Unity Agent Skill| G["Execute: npx skills run [skill-name]"]
         F -->|Source Code / C#| H["Direct C# Script Modification"]
         F -->|Editor Automation| I["Invoke Unity CLI Headless Batch"]
@@ -25,7 +31,7 @@ flowchart TD
         I --> J
     end
 
-    subgraph S3["3. Verification Gate"]
+    subgraph S4["4. Verification Gate (Subagent)"]
         J --> K["Log SoT Conformance Attestation"]
         K --> L["Run Unity CLI Test Runner"]
         L --> M{"Compilation & Tests Pass?"}
@@ -34,9 +40,10 @@ flowchart TD
         M -->|All Tests Green| O["Verify AssetDatabase & .meta Integrity"]
     end
 
-    subgraph S4["4. Commit & Handoff"]
-        O --> P["Stage Validated Files"]
-        P --> Q["Generate Concise Completion Report"]
+    subgraph S5["5. Review, Cleanup & Handoff (Tech Lead)"]
+        O --> P["Submit REVIEW & Verify Diff"]
+        P --> Q["Purge TASK-XXX.md & Update Board"]
+        Q --> R["Generate Concise Completion Report"]
     end
 ```
 
@@ -146,19 +153,20 @@ flowchart LR
         P1["Formulate Solution"] --> P2["Check SoT Boundaries"]
         P2 --> P3["Generate .agent-harness/tasks/TASK-XXX.md"]
         P3 --> P4["Register on tasks-board.md as TODO"]
+        P4 --> P5["Pause: Await User Consent"]
     end
 
     subgraph S2["2. Execution Agent"]
-        P4 --> E1["Claim Task as DOING"]
+        P5 -->|User Consents| E1["Claim Task as DOING"]
         E1 --> E2["Implement Code & Assets"]
         E2 --> E3["Run Unity CLI Tests"]
         E3 --> E4["Submit for REVIEW"]
     end
 
-    subgraph S3["3. Technical Lead"]
-        E4 --> L1{"Verify Diff & Logs"}
+    subgraph S3["3. Technical Lead & User"]
+        E4 --> L1{"User & Lead Review"}
         L1 -->|Revisions Needed| E1
-        L1 -->|Approved| L2["Mark Task DONE"]
+        L1 -->|User Consents to DONE| L2["Mark Task DONE"]
         L2 --> L3["Purge TASK-XXX.md"]
         L3 --> L4["Remove from tasks-board.md"]
     end
@@ -171,6 +179,6 @@ flowchart LR
 1. **Bootstrap**: Execute `.agent-harness/bootstrap-harness.bat` (Windows) or `.agent-harness/bootstrap-harness.sh` (macOS/Linux).
 2. **Read Rules**: Review [`.agent-harness/agent-rules.md`](file:///.agent-harness/agent-rules.md) for immutable boundaries and clarification protocols.
 3. **Inspect Context & SoT**: Review [`.agent-harness/project-context.md`](file:///.agent-harness/project-context.md) and validate designs against [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md).
-4. **Task Board Check**: Inspect [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md) to claim an open `TODO` task or register newly planned work.
-5. **Attest & Execute**: State SoT conformance in logs, execute via skills/CLI, verify with automated tests, and stage clean commits.
-6. **Hand-off & Context Update**: Move task to `REVIEW` (or delete if approved `DONE`) and update `project-context.md` if the broader architecture shifted.
+4. **Plan & Pause for Consent**: Inspect [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md). For any new implementation request, create `.agent-harness/tasks/TASK-XXX-<name>.md` from `task.template.md`, register it as `TODO`, and **pause for user consent** before delegating execution (Rule 11).
+5. **Attest & Execute (Subagent)**: After user consent, the Execution subagent claims the task (`DOING`), states SoT conformance in logs, executes via skills/CLI, verifies with automated tests, and submits for `REVIEW`.
+6. **Review, Pause for Consent & Closeout (Tech Lead)**: Verify the diff and test results, **pause for user review and consent** on `REVIEW`, and upon approval mark `DONE`, purge `TASK-XXX.md`, remove its row from `tasks-board.md`, and update `project-context.md` if the broader architecture shifted.
