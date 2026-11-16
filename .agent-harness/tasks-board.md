@@ -12,6 +12,7 @@
 ```mermaid
 sequenceDiagram
     autonumber
+    actor User as User (Approval Gates)
     actor Planner as Planning Agent
     actor Executor as Execution Agent
     actor TechLead as Technical Lead
@@ -20,6 +21,9 @@ sequenceDiagram
     Planner->>Planner: Parse SoT & Project Context
     Planner->>TasksDir: Create .agent-harness/tasks/TASK-XXX.md
     Planner->>Board: Register task in Table [Status: TODO]
+    Planner->>User: Pause & request consent to start task
+
+    User-->>Planner: Consent granted (Start Execution)
 
     Note over Executor: 2. Execution Phase
     Executor->>Board: Claim task [Status: DOING]
@@ -30,7 +34,9 @@ sequenceDiagram
 
     Note over TechLead: 3. Review & Cleanup Phase
     TechLead->>TechLead: Review code diff, SoT attestation & test XMLs
-    alt Changes Approved
+    TechLead->>User: Pause & request review/consent for DONE
+    alt User & TechLead Approve
+        User-->>TechLead: Consent granted (Mark DONE)
         TechLead->>Board: Mark task [Status: DONE]
         TechLead->>TasksDir: Delete .agent-harness/tasks/TASK-XXX.md
         TechLead->>Board: Remove task entry from Open Tasks table
@@ -45,10 +51,10 @@ sequenceDiagram
 
 | Status | Role Responsible | Description |
 | :--- | :--- | :--- |
-| **`TODO`** | Planning Agent | Specification written, validated against SoT, and ready for pickup. |
-| **`DOING`** | Execution Agent | Task claimed; code/assets actively being modified and tested via CLI. |
-| **`REVIEW`** | Execution → Tech Lead | Changes committed and CLI tests passed cleanly; awaiting Technical Lead review. |
-| **`DONE`** | Technical Lead | Approved by Lead. **Triggers immediate cleanup.** |
+| **`TODO`** | Planning Agent → User | Specification written, validated against SoT, and **paused awaiting user consent** before starting execution. |
+| **`DOING`** | Execution Agent | User consented; task claimed and code/assets actively being modified and tested via CLI. |
+| **`REVIEW`** | Execution → Tech Lead → User | Changes committed and CLI tests passed cleanly; **paused awaiting user review & consent** to move to `DONE`. |
+| **`DONE`** | Technical Lead (with User Consent) | Approved by User and Tech Lead. **Triggers immediate cleanup.** |
 
 ---
 
