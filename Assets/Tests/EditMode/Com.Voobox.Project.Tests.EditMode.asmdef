@@ -20,7 +20,9 @@
         "FMODUnity",
         "Com.Voobox.Project.Others",
         "Unity.Cinemachine",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"

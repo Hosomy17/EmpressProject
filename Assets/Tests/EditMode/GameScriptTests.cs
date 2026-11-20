@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Com.Voobox.Project.Tests.EditMode
 {
-    public class GameScriptSystemTests
+    public class GameScriptTests
     {
         private static void InvokePrivateMethod(object target, string methodName)
         {
@@ -22,7 +22,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         public void OnHeroDied_LogsMessageWhenSubscribed_AndStopsLoggingAfterOnDestroy()
         {
             var go = new GameObject("GameScriptSystemTest");
-            var system = go.AddComponent<GameScriptSystem>();
+            var system = go.AddComponent<GameScript>();
 
             try
             {
@@ -51,7 +51,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         public void OnBossDied_LogsMessageWhenSubscribed_AndStopsLoggingAfterOnDestroy()
         {
             var go = new GameObject("GameScriptSystemTest");
-            var system = go.AddComponent<GameScriptSystem>();
+            var system = go.AddComponent<GameScript>();
 
             try
             {

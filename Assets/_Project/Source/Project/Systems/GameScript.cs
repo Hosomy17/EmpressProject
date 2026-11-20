@@ -1,4 +1,3 @@
-using System;
 using Com.Voobox.Framework.Events;
 using Com.Voobox.Project.Events.BossEvents;
 using Com.Voobox.Project.Events.HeroEvents;
@@ -6,7 +5,7 @@ using UnityEngine;
 
 namespace Com.Voobox.Project.Systems
 {
-    public class GameScriptSystem : MonoBehaviour
+    public class GameScript : MonoBehaviour
     {
 
         private void Awake()
