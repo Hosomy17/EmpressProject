@@ -114,6 +114,7 @@ stateDiagram-v2
 
 ### Rule 5: Mandatory Pre-Completion Test Gate
 * **Constraint**: A task is **NEVER** marked complete until all associated tests pass cleanly via the Unity CLI test runner.
+* **Test Creation Constraint**: Do not write tests that involve calls to a coroutine or UniTask.
 * **Test Invocation Protocol**:
   1. **EditMode Tests**:
      ```powershell

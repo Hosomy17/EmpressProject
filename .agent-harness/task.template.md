@@ -31,6 +31,7 @@
 * **Event Pattern**: `[e.g., Cross-entity: EventBus.Notify<SomeEvent>() / EventBus.Subscribe<SomeEvent>() | Local: Direct method call from Composer to Component]`
 * **Performance / GC**: `[e.g., Zero heap allocations in Update(), pre-cached component refs in Awake(), Animator hashes via StringToHash()]`
 * **Async Pattern**: `[e.g., UniTask for async operations, TaskHandle for cancellation]`
+* **Test Creation Constraint**: `Do not write tests that involve calls to a coroutine or UniTask.`
 
 ---
 
