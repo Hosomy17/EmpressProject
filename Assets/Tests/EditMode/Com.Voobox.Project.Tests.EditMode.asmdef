@@ -9,8 +9,18 @@
         "Com.Voobox.Project.Component",
         "Com.Voobox.Project.Events.HeroEvents",
         "Com.Voobox.Project.Events.BossEvents",
+        "Com.Voobox.Project.Events.SteamworksEvents",
         "Com.Voobox.Project.Entity",
-        "Com.Voobox.Project.Systems"
+        "Com.Voobox.Project.Systems",
+        "Com.Voobox.Project.Scripts",
+        "Com.Voobox.Framework.ObjectPooling",
+        "Unity.Addressables",
+        "UniTask",
+        "Com.Voobox.Project.Utils",
+        "FMODUnity",
+        "Com.Voobox.Project.Others",
+        "Unity.Cinemachine",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
