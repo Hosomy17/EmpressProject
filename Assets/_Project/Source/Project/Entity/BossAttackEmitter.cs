@@ -1,3 +1,4 @@
+using System;
 using Com.Voobox.Framework.Events;
 using Com.Voobox.Project.Events.BossEvents;
 using UnityEngine;
@@ -17,6 +18,11 @@ namespace Com.Voobox.Project.Entity
             m_animator = GetComponent<Animator>();
 
             EventBus.Subscribe<DoRaiseOfSwordsEvent>(DoRaiseOfSwords);
+        }
+
+        private void OnDestroy()
+        {
+            EventBus.Unsubscribe<DoRaiseOfSwordsEvent>(DoRaiseOfSwords);
         }
 
         private void DoRaiseOfSwords(DoRaiseOfSwordsEvent args)
