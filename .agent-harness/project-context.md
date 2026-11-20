@@ -151,8 +151,9 @@ flowchart LR
 ### Scenes
 | Scene | Purpose |
 | :--- | :--- |
-| `MainScreenScene.unity` | Main screen UI with placeholder splash image and START button loading `BossScene` |
+| `MainMenuScene.unity` | Main screen UI with placeholder splash image and START button loading `BossScene` |
 | `BossScene.unity` | Boss fight arena with Hero, Boss, camera, lighting, stage |
+| `GameOverScene.unity` | Game over UI with `"Continue?"` TextMeshPro prompt and `"Yes"` (`BossScene`) / `"No"` (`MainMenuScene`) buttons |
 
 ---
 
