@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Com.Voobox.Project.Data
 {
     [Serializable]
-    public class HeroData : IAttackerData, IDasherData, IMovementData, IScreenShakerData, IHealthData
+    public class HeroData : IAttackerData, IDasherData, IMovementData, IJumpData, IScreenShakerData, IHealthData
     {
         [SerializeField, FoldoutGroup("Health Setup")] private int m_maxHitPoints;
 
