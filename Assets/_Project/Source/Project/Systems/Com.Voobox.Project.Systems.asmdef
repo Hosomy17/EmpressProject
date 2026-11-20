@@ -4,6 +4,7 @@
     "references": [
         "GUID:b49857e2eea66644a914e6b6b9bffb6a",
         "Com.Voobox.Project.Events.HeroEvents",
+        "Unity.InputSystem",
         "GUID:e21bcbae1a7445647837a3686c8f1571"
     ],
     "includePlatforms": [],
