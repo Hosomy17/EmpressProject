@@ -151,7 +151,8 @@ flowchart LR
 ### Scenes
 | Scene | Purpose |
 | :--- | :--- |
-| `BossScene.unity` | Single active scene — boss fight arena with Hero, Boss, camera, lighting, stage |
+| `MainScreenScene.unity` | Main screen UI with placeholder splash image and START button loading `BossScene` |
+| `BossScene.unity` | Boss fight arena with Hero, Boss, camera, lighting, stage |
 
 ---
 

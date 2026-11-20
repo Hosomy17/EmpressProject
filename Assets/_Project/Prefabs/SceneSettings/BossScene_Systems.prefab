@@ -106,7 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3377218452270881303}
   m_Layer: 0
-  m_Name: BossScene_Settings
+  m_Name: BossScene_Systems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

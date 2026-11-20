@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2951058074958838365
+--- !u!1 &773669075109860436
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1174307789349762080}
-  - component: {fileID: 8919775512045231975}
+  - component: {fileID: 7571403506012001163}
+  - component: {fileID: 4923484185700385901}
   m_Layer: 0
-  m_Name: GameScriptSystem
+  m_Name: MainMenuScene_Systems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1174307789349762080
+--- !u!4 &7571403506012001163
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2951058074958838365}
+  m_GameObject: {fileID: 773669075109860436}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,15 +32,16 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8919775512045231975
+--- !u!114 &4923484185700385901
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2951058074958838365}
+  m_GameObject: {fileID: 773669075109860436}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b32a07071d556434a81a072dc000dc29, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e0e92a0c4adc5c409320415102f4895, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Com.Voobox.Project.Systems::Com.Voobox.Project.Systems.GameScriptSystem
+  m_EditorClassIdentifier: Com.Voobox.Project.Scripts::Com.Voobox.Project.Scripts.MainScreenScript
+  m_startButton: {fileID: 0}

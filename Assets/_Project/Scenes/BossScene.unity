@@ -415,7 +415,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2951058074958838365, guid: 93fe034b85f490043b1ff5b3a854dfb4, type: 3}
       propertyPath: m_Name
-      value: GameScriptSystem
+      value: Game_Systems
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -586,7 +586,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8648098764651229566, guid: 9c13009ba359ac041907fa849587a356, type: 3}
       propertyPath: m_Name
-      value: BossScene_Settings
+      value: BossScene_Systems
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
