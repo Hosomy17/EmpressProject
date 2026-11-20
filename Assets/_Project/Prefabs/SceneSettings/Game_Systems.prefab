@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1174307789349762080}
   - component: {fileID: 8919775512045231975}
+  - component: {fileID: 6726687673814469892}
   m_Layer: 0
   m_Name: Game_Systems
   m_TagString: Untagged
@@ -44,3 +45,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b32a07071d556434a81a072dc000dc29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Com.Voobox.Project.Systems::Com.Voobox.Project.Systems.GameScriptSystem
+--- !u!114 &6726687673814469892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2951058074958838365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71756714ad9c3bf4ca0d6c22671089c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Com.Voobox.Project.Systems::Com.Voobox.Project.Systems.PauseController
