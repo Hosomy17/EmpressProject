@@ -39,6 +39,7 @@ namespace Com.Voobox.Project.Entity
         [SerializeField] private ParticleSystem m_landParticles;
 
         private Movement2DComponent m_movement2DComponent;
+        private Jump2DComponent m_jump2DComponent;
         private DasherComponent m_dasherComponent;
         private AttackerComponent m_attackerComponent;
         private HeroAnimatorComponent m_heroAnimatorComponent;
@@ -95,6 +96,7 @@ namespace Com.Voobox.Project.Entity
             Data.PositionComposer = m_positionComposer;
 
             m_movement2DComponent = new Movement2DComponent(Data);
+            m_jump2DComponent = new Jump2DComponent(Data);
             m_dasherComponent = new DasherComponent(Data);
             m_attackerComponent = new AttackerComponent(Data);
             m_heroAnimatorComponent = new HeroAnimatorComponent(animator, renderer);//TODO
@@ -138,7 +140,7 @@ namespace Com.Voobox.Project.Entity
             m_hasJump = true;
             m_isJumping = false;
 
-            if(m_movement2DComponent.IsJumpBufferActive)
+            if (m_jump2DComponent.IsJumpBufferActive)
                 Jump();
 
             if (wasGrounded) return;
@@ -281,7 +283,7 @@ namespace Com.Voobox.Project.Entity
         {
             if (!m_hasJump)
             {
-                m_movement2DComponent.StartJumpBuffer().Forget();
+                m_jump2DComponent.StartJumpBuffer().Forget();
                 return;
             }
 
@@ -292,7 +294,7 @@ namespace Com.Voobox.Project.Entity
         {
             m_hasJump = false;
             m_isJumping = true;
-            m_movement2DComponent.Jump();
+            m_jump2DComponent.Jump();
 
             if (m_jumpParticles != null)
                 m_jumpParticles.Play();
@@ -301,7 +303,7 @@ namespace Com.Voobox.Project.Entity
         private void JumpCut(InputAction.CallbackContext callbackContext)
         {
             if (m_isJumping && m_rigidbody2D.linearVelocity.y > 0)
-                m_movement2DComponent.JumpCut();
+                m_jump2DComponent.JumpCut();
 
             m_isJumping = false;
         }
@@ -311,7 +313,7 @@ namespace Com.Voobox.Project.Entity
             await DoHitStop();
             m_hasJump = true;
             m_isJumping = false;
-            m_movement2DComponent.PogoJump();
+            m_jump2DComponent.PogoJump();
             m_screenShakerComponent.GenerateImpulse();
         }
 
