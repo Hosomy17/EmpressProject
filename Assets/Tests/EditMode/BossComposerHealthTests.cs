@@ -12,14 +12,14 @@ namespace Com.Voobox.Project.Tests.EditMode
     {
         private static void SetPrivateField(object target, string fieldName, object value)
         {
-            var field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, $"Field '{fieldName}' not found on {target.GetType().Name}.");
             field.SetValue(target, value);
         }
 
         private static void InvokePrivateMethod(object target, string methodName, params object[] args)
         {
-            var method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, $"Method '{methodName}' not found on {target.GetType().Name}.");
             method.Invoke(target, args);
         }

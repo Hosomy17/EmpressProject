@@ -17,7 +17,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            var instanceProperty = typeof(ObjectPooler).GetProperty(
+            PropertyInfo instanceProperty = typeof(ObjectPooler).GetProperty(
                 nameof(ObjectPooler.Instance),
                 BindingFlags.Public | BindingFlags.Static);
             instanceProperty?.SetValue(null, null);
@@ -53,22 +53,22 @@ namespace Com.Voobox.Project.Tests.EditMode
             m_poolerGo = new GameObject("TestObjectPooler");
             var pooler = m_poolerGo.AddComponent<ObjectPooler>();
 
-            var instanceProperty = typeof(ObjectPooler).GetProperty(
+            PropertyInfo instanceProperty = typeof(ObjectPooler).GetProperty(
                 nameof(ObjectPooler.Instance),
                 BindingFlags.Public | BindingFlags.Static);
             Assert.IsNotNull(instanceProperty);
             instanceProperty.SetValue(null, pooler);
 
             var assetRef = new AssetReferenceGameObject("00000000000000000000000000000001");
-            var key = assetRef.RuntimeKey;
+            object key = assetRef.RuntimeKey;
 
             m_poolParentGo = new GameObject("TestPoolParent");
             m_poolParentGo.transform.SetParent(m_poolerGo.transform);
 
-            var poolParentsField = typeof(ObjectPooler).GetField(
+            FieldInfo poolParentsField = typeof(ObjectPooler).GetField(
                 "m_poolParents",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            var poolDictionaryField = typeof(ObjectPooler).GetField(
+            FieldInfo poolDictionaryField = typeof(ObjectPooler).GetField(
                 "m_poolDictionary",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(poolParentsField);

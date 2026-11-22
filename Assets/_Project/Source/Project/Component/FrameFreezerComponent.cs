@@ -8,7 +8,7 @@ namespace Com.Voobox.Project.Component
     {
         public async UniTask Freeze(float duration, float scale)
         {
-            var originalScale = Time.timeScale;
+            float originalScale = Time.timeScale;
             Time.timeScale = scale;
             await UniTask.Delay(TimeSpan.FromSeconds(duration), ignoreTimeScale: true);
             Time.timeScale = originalScale;

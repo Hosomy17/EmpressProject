@@ -139,8 +139,8 @@ namespace Com.Voobox.Project.Component
 
         private static Vector2 ApplyDeadZone(Vector2 axis)
         {
-            var x = Mathf.Abs(axis.x) < AXIS_DEAD_ZONE ? 0f : Mathf.Sign(axis.x);
-            var y = Mathf.Abs(axis.y) < AXIS_DEAD_ZONE ? 0f : Mathf.Sign(axis.y);
+            float x = Mathf.Abs(axis.x) < AXIS_DEAD_ZONE ? 0f : Mathf.Sign(axis.x);
+            float y = Mathf.Abs(axis.y) < AXIS_DEAD_ZONE ? 0f : Mathf.Sign(axis.y);
             return new Vector2(x, y);
         }
     }

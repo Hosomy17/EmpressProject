@@ -35,7 +35,7 @@ namespace Com.Voobox.Project.Component
 
         public async UniTask Dash(int dashDir)
         {
-            var originalGravity = m_rigidbody2D.gravityScale;
+            float originalGravity = m_rigidbody2D.gravityScale;
             m_rigidbody2D.gravityScale = 0f;
             m_rigidbody2D.linearVelocity = new Vector2(dashDir * m_dasherData.DashForce, 0f);
             TryPlayDashSfx();

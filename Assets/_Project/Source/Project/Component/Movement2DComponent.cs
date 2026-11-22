@@ -18,7 +18,7 @@ namespace Com.Voobox.Project.Component
 
         public void Run(float vectorX)
         {
-            var speed = vectorX * m_movementData.Speed;
+            float speed = vectorX * m_movementData.Speed;
             m_rigidbody2D.linearVelocity = new Vector2(speed, m_rigidbody2D.linearVelocity.y);
         }
 

@@ -16,6 +16,8 @@ namespace Com.Voobox.Project.Entity
     [RequireComponent(typeof(SpriteRenderer), typeof(StudioEventEmitter))]
     public class HeroComposer : MonoBehaviour
     {
+        private const int HURT_OVERLAP_BUFFER_SIZE = 16;
+
         [SerializeField]
         [InlineObject]
         private HeroDataScriptableObject m_heroData;
@@ -25,6 +27,9 @@ namespace Com.Voobox.Project.Entity
         [SerializeField] private AttackArea m_attackDownArea;
         [SerializeField] private AttackArea m_attackLeftArea;
         [SerializeField] private AttackArea m_attackRightArea;
+
+        [Header("Hurtbox Setup")]
+        [SerializeField] private Collider2D m_hurtboxCollider;
 
         [Header("ScreenShake Setup")]
         [SerializeField] private CinemachinePositionComposer m_positionComposer;
@@ -52,6 +57,8 @@ namespace Com.Voobox.Project.Entity
         private Collider2D m_boxCollider;
         private Rigidbody2D m_rigidbody2D;
         private StudioEventEmitter m_sfxRunEmitter;
+        private readonly Collider2D[] m_hurtOverlapBuffer = new Collider2D[HURT_OVERLAP_BUFFER_SIZE];
+        private ContactFilter2D m_hurtContactFilter;
 
         private HeroData Data => m_heroData.HeroData;
 
@@ -77,6 +84,12 @@ namespace Com.Voobox.Project.Entity
             var animator = GetComponent<Animator>();
             var renderer = GetComponent<SpriteRenderer>();
             m_sfxRunEmitter = GetComponent<StudioEventEmitter>();
+
+            m_hurtContactFilter = new ContactFilter2D
+            {
+                useTriggers = true,
+                useLayerMask = true
+            };
 
             if (m_controller == null)
             {
@@ -154,7 +167,7 @@ namespace Com.Voobox.Project.Entity
         {
             if (m_controller != null)
             {
-                var bodyState = BuildBodyState();
+                HeroBodyState bodyState = BuildBodyState();
                 m_currentIntent = m_controller.SampleIntent(in bodyState, Time.deltaTime);
             }
             else
@@ -206,8 +219,8 @@ namespace Com.Voobox.Project.Entity
 
         private void CheckGround()
         {
-            var wasGrounded = m_isGrounded;
-            var hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, Data.GroundLayer);
+            bool wasGrounded = m_isGrounded;
+            RaycastHit2D hit = Physics2D.BoxCast(m_boxCollider.bounds.center, m_boxCollider.bounds.size, 0f, Vector2.down, 0.1f, Data.GroundLayer);
             m_isGrounded = hit.collider != null && m_rigidbody2D.linearVelocity.y <= 0.01f;
 
             if (!m_isGrounded) return;
@@ -244,11 +257,33 @@ namespace Com.Voobox.Project.Entity
                 m_screenShakerComponent.FlipTargetOffsetX(!m_isFacingRight);
         }
 
+        private static bool MatchesLayerInHierarchy(Collider2D collision, LayerMask layerMask)
+        {
+            if (collision == null) return false;
+
+            int mask = layerMask.value;
+            if ((mask & (1 << collision.gameObject.layer)) != 0) return true;
+
+            Rigidbody2D attachedBody = collision.attachedRigidbody;
+            if (attachedBody != null && (mask & (1 << attachedBody.gameObject.layer)) != 0) return true;
+
+            Transform parent = collision.transform.parent;
+            while (parent != null)
+            {
+                if ((mask & (1 << parent.gameObject.layer)) != 0) return true;
+                parent = parent.parent;
+            }
+
+            return false;
+        }
+
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (m_healthComponent.IsDead) return;
-            if (m_isGhosting || ((1 << collision.gameObject.layer) & Data.HurtLayer) == 0) return;
-            if (m_boxCollider == null || !m_boxCollider.IsTouching(collision)) return;
+            if (collision == null || m_healthComponent == null || m_healthComponent.IsDead) return;
+            if (m_isGhosting) return;
+            if (collision.transform == transform || collision.transform.IsChildOf(transform)) return;
+            if (m_hurtboxCollider == null || !m_hurtboxCollider.IsTouching(collision)) return;
+            if (!MatchesLayerInHierarchy(collision, Data.HurtLayer)) return;
 
             TakeDamage(GetKnockbackDirection(collision));
         }
@@ -298,20 +333,37 @@ namespace Com.Voobox.Project.Entity
 
         private void CheckDamage()
         {
-            if (m_healthComponent.IsDead) return;
-            if (m_boxCollider == null || !m_boxCollider.IsTouchingLayers(Data.HurtLayer)) return;
+            if (m_healthComponent == null || m_healthComponent.IsDead || m_hurtboxCollider == null) return;
 
-            var enemyCollider = Physics2D.OverlapBox(transform.position, m_boxCollider.bounds.size, 0f, Data.HurtLayer);
-            if (enemyCollider == null) return;
+            m_hurtContactFilter.useTriggers = true;
+            m_hurtContactFilter.useLayerMask = true;
+            m_hurtContactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(m_hurtboxCollider.gameObject.layer));
 
-            TakeDamage(GetKnockbackDirection(enemyCollider));
+            int hitCount = m_hurtboxCollider.Overlap(m_hurtContactFilter, m_hurtOverlapBuffer);
+            Collider2D matchedEnemy = null;
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider2D candidate = m_hurtOverlapBuffer[i];
+                m_hurtOverlapBuffer[i] = null;
+
+                if (matchedEnemy != null || candidate == null) continue;
+                if (candidate.transform == transform || candidate.transform.IsChildOf(transform)) continue;
+                if (MatchesLayerInHierarchy(candidate, Data.HurtLayer))
+                {
+                    matchedEnemy = candidate;
+                }
+            }
+
+            if (matchedEnemy == null) return;
+
+            TakeDamage(GetKnockbackDirection(matchedEnemy));
         }
 
         #region Movement Behaviour
 
         private void HandleRunParticles()
         {
-            var isRunning = m_isGrounded && Mathf.Abs(m_currentIntent.MoveAxis.x) > 0.05f && CanRun();
+            bool isRunning = m_isGrounded && Mathf.Abs(m_currentIntent.MoveAxis.x) > 0.05f && CanRun();
 
             if (isRunning)
             {
@@ -334,10 +386,10 @@ namespace Com.Voobox.Project.Entity
         {
             if (!CanRun()) return;
 
-            var moveX = m_currentIntent.MoveAxis.x * m_currentIntent.SpeedMultiplier;
+            float moveX = m_currentIntent.MoveAxis.x * m_currentIntent.SpeedMultiplier;
             m_movement2DComponent.Run(moveX);
 
-            var value = 0;
+            int value = 0;
             if (m_isGrounded && moveX != 0f)
                 value = 1;
 
@@ -477,7 +529,7 @@ namespace Com.Voobox.Project.Entity
 
             await DoHitStop();
 
-            var recoilDirection = isDirectionRight ? 1f : -1f;
+            float recoilDirection = isDirectionRight ? 1f : -1f;
 
             if (m_screenShakerComponent != null && Data.ImpulseSource != null)
                 m_screenShakerComponent.ShakeDirection(-recoilDirection);

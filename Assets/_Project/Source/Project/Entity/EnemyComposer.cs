@@ -65,9 +65,6 @@ namespace Com.Voobox.Project.Entity
             if (m_spriteRenderer == null)
                 m_spriteRenderer = GetComponent<SpriteRenderer>();
 
-            if (m_detectionCollider != null)
-                m_detectionCollider.isTrigger = true;
-
             m_enemyData = Instantiate(m_enemyData);
             Data.Rigidbody2D = m_rigidbody2D;
 

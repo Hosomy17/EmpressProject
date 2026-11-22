@@ -20,7 +20,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             if (m_emitter != null)
             {
-                var method = typeof(BossAttackEmitter).GetMethod(
+                MethodInfo method = typeof(BossAttackEmitter).GetMethod(
                     "DoRaiseOfSwords",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 if (method != null)
@@ -44,14 +44,14 @@ namespace Com.Voobox.Project.Tests.EditMode
 
         private static T GetPrivateField<T>(object target, string fieldName)
         {
-            var field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, $"Field '{fieldName}' not found on {target.GetType().Name}.");
             return (T)field.GetValue(target);
         }
 
         private static void InvokePrivateMethod(object target, string methodName, params object[] args)
         {
-            var method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, $"Method '{methodName}' not found on {target.GetType().Name}.");
             method.Invoke(target, args);
         }
@@ -69,16 +69,16 @@ namespace Com.Voobox.Project.Tests.EditMode
             Assert.IsNotNull(cachedAnimator);
             Assert.AreSame(expectedAnimator, cachedAnimator);
 
-            var subscribersField = typeof(EventBus).GetField(
+            FieldInfo subscribersField = typeof(EventBus).GetField(
                 "m_subscribers",
                 BindingFlags.Static | BindingFlags.NonPublic);
             Assert.IsNotNull(subscribersField, "Field 'm_subscribers' not found on EventBus.");
 
             var subscribers = subscribersField.GetValue(null) as Dictionary<Type, List<Delegate>>;
             Assert.IsNotNull(subscribers);
-            Assert.IsTrue(subscribers.TryGetValue(typeof(DoRaiseOfSwordsEvent), out var callbacks));
+            Assert.IsTrue(subscribers.TryGetValue(typeof(DoRaiseOfSwordsEvent), out List<Delegate> callbacks));
 
-            var method = typeof(BossAttackEmitter).GetMethod(
+            MethodInfo method = typeof(BossAttackEmitter).GetMethod(
                 "DoRaiseOfSwords",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             var expectedHandler = (Action<DoRaiseOfSwordsEvent>)Delegate.CreateDelegate(

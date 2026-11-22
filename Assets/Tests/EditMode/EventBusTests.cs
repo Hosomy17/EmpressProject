@@ -32,7 +32,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         public void Notify_InvokesSubscribedCallbackWithExactPayload()
         {
             PrimaryTestEvent received = default;
-            var callCount = 0;
+            int callCount = 0;
 
             void Handler(PrimaryTestEvent evt)
             {
@@ -59,10 +59,10 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Notify_InvokesMultipleSubscribersForSameEventType()
         {
-            var firstCount = 0;
-            var secondCount = 0;
-            var firstValue = 0;
-            var secondValue = 0;
+            int firstCount = 0;
+            int secondCount = 0;
+            int firstValue = 0;
+            int secondValue = 0;
 
             void FirstHandler(PrimaryTestEvent evt)
             {
@@ -97,8 +97,8 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Unsubscribe_RemovesOnlySpecifiedCallbackAndKeepsOthersActive()
         {
-            var firstCount = 0;
-            var secondCount = 0;
+            int firstCount = 0;
+            int secondCount = 0;
 
             void FirstHandler(PrimaryTestEvent evt) => firstCount++;
             void SecondHandler(PrimaryTestEvent evt) => secondCount++;
@@ -148,8 +148,8 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Notify_DifferentEventTypes_AreIsolated()
         {
-            var primaryCount = 0;
-            var secondaryCount = 0;
+            int primaryCount = 0;
+            int secondaryCount = 0;
 
             void PrimaryHandler(PrimaryTestEvent evt) => primaryCount++;
             void SecondaryHandler(SecondaryTestEvent evt) => secondaryCount++;

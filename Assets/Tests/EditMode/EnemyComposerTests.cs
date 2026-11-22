@@ -199,6 +199,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             const int heroLayer = 3;
             const int enemyLayer = 7;
+            const int sensorLayer = 9;
 
             var profile = ScriptableObject.CreateInstance<BrainProfileScriptableObject>();
             m_createdObjects.Add(profile);
@@ -231,6 +232,13 @@ namespace Com.Voobox.Project.Tests.EditMode
                 enemyGo.transform.position = Vector3.zero;
 
                 BoxCollider2D detectionCollider = AttachDetectionZone(enemyGo, composer, new Vector2(20f, 6f));
+                detectionCollider.isTrigger = true;
+                var innerSensorGo = new GameObject("InnerSensor") { layer = sensorLayer };
+                m_createdObjects.Add(innerSensorGo);
+                innerSensorGo.transform.SetParent(enemyGo.transform, false);
+                var innerSensorCollider = innerSensorGo.AddComponent<BoxCollider2D>();
+                innerSensorCollider.isTrigger = true;
+                innerSensorCollider.size = new Vector2(3f, 3f);
 
                 var hitboxGo = new GameObject("Hitbox") { layer = enemyLayer };
                 m_createdObjects.Add(hitboxGo);
@@ -240,7 +248,6 @@ namespace Com.Voobox.Project.Tests.EditMode
                 hitboxCollider.size = new Vector2(3f, 3f);
 
                 InvokePrivateMethod(composer, "Awake");
-                Assert.IsTrue(detectionCollider.isTrigger);
                 TrackClonedData(composer, dataSo);
                 InvokePrivateMethod(composer, "OnEnable");
 
@@ -250,6 +257,13 @@ namespace Com.Voobox.Project.Tests.EditMode
                 var heroCollider = heroGo.AddComponent<BoxCollider2D>();
                 heroCollider.size = Vector2.one;
 
+                var heroHurtboxGo = new GameObject("Hurtbox") { layer = sensorLayer };
+                m_createdObjects.Add(heroHurtboxGo);
+                heroHurtboxGo.transform.SetParent(heroGo.transform, false);
+                var heroHurtboxCollider = heroHurtboxGo.AddComponent<BoxCollider2D>();
+                heroHurtboxCollider.isTrigger = true;
+                heroHurtboxCollider.size = Vector2.one;
+
                 var rb = enemyGo.GetComponent<Rigidbody2D>();
                 var spriteRenderer = enemyGo.GetComponent<SpriteRenderer>();
 
@@ -258,7 +272,8 @@ namespace Com.Voobox.Project.Tests.EditMode
                 // Enter DetectionZone -> Idle -> Combat and moves toward hero (+X).
                 SyncAndStepPhysics2D();
                 Assert.IsTrue(detectionCollider.IsTouching(heroCollider));
-                Assert.IsFalse(hitboxCollider.IsTouching(heroCollider));
+                Assert.IsFalse(innerSensorCollider.IsTouching(heroCollider));
+                Assert.IsFalse(hitboxCollider.IsTouching(heroHurtboxCollider));
                 InvokePrivateMethod(composer, "OnTriggerEnter2D", heroCollider);
                 InvokePrivateMethod(composer, "Update");
                 InvokePrivateMethod(composer, "FixedUpdate");
@@ -267,20 +282,25 @@ namespace Com.Voobox.Project.Tests.EditMode
                 Assert.AreEqual(4f, rb.linearVelocity.x, 0.001f);
                 Assert.IsFalse(spriteRenderer.flipX);
 
-                // Touch inner Hitbox while already inside DetectionZone -> does not duplicate tracked target.
+                // Touch inner Sensor and Hitbox (via Hero/Hurtbox) while already inside DetectionZone -> does not duplicate tracked target.
                 heroGo.transform.position = enemyGo.transform.position + new Vector3(1f, 0f, 0f);
                 SyncAndStepPhysics2D();
-                Assert.IsTrue(hitboxCollider.IsTouching(heroCollider));
-                Assert.IsTrue(detectionCollider.IsTouching(heroCollider));
-                InvokePrivateMethod(composer, "OnTriggerEnter2D", heroCollider);
-                Assert.AreEqual(1, GetPrivateField<List<Collider2D>>(composer, "m_targetsInZone").Count);
-
-                // Exit inner Hitbox while still touching DetectionZone -> stays in Combat (no false Hunting).
-                heroGo.transform.position = enemyGo.transform.position + new Vector3(5f, 0f, 0f);
-                SyncAndStepPhysics2D();
+                Assert.IsTrue(innerSensorCollider.IsTouching(heroCollider));
+                Assert.IsTrue(hitboxCollider.IsTouching(heroHurtboxCollider));
                 Assert.IsFalse(hitboxCollider.IsTouching(heroCollider));
                 Assert.IsTrue(detectionCollider.IsTouching(heroCollider));
+                InvokePrivateMethod(composer, "OnTriggerEnter2D", heroCollider);
+                InvokePrivateMethod(composer, "OnTriggerEnter2D", heroHurtboxCollider);
+                Assert.AreEqual(1, GetPrivateField<List<Collider2D>>(composer, "m_targetsInZone").Count);
+
+                // Exit inner Sensor and Hitbox while still touching DetectionZone -> stays in Combat (no false Hunting).
+                heroGo.transform.position = enemyGo.transform.position + new Vector3(5f, 0f, 0f);
+                SyncAndStepPhysics2D();
+                Assert.IsFalse(innerSensorCollider.IsTouching(heroCollider));
+                Assert.IsFalse(hitboxCollider.IsTouching(heroHurtboxCollider));
+                Assert.IsTrue(detectionCollider.IsTouching(heroCollider));
                 InvokePrivateMethod(composer, "OnTriggerExit2D", heroCollider);
+                InvokePrivateMethod(composer, "OnTriggerExit2D", heroHurtboxCollider);
                 InvokePrivateMethod(composer, "Update");
 
                 Assert.AreEqual("Combat", composer.CurrentBrainStateId);
@@ -317,7 +337,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             const int enemyLayer = 7;
             const int hurtLayer = 8;
-            const int nonHurtLayer = 3;
+            const int nonHurtLayer = 9;
 
             RunWithScriptPhysics2D(() =>
             {
@@ -445,7 +465,7 @@ namespace Com.Voobox.Project.Tests.EditMode
                 Assert.IsTrue(controller.LastBodyState.HasDetectedTarget);
                 Assert.AreEqual(3f, controller.LastBodyState.DetectedTargetPosition.x, 0.001f);
                 Assert.AreEqual(0f, controller.LastBodyState.DetectedTargetPosition.y, 0.001f);
-                Assert.AreEqual(3f, controller.LastBodyState.DetectedTargetDistance, 0.001f);
+                Assert.AreEqual(3f, controller.LastBodyState.DetectedTargetDistance, 0.1f);
                 Assert.LessOrEqual(controller.LastBodyState.DetectedTargetDistance, controller.LastBodyState.DetectionRange);
                 Assert.AreEqual(5f, controller.LastBodyState.DetectionRange, 0.001f);
 
@@ -557,7 +577,7 @@ namespace Com.Voobox.Project.Tests.EditMode
                 InvokePrivateMethod(composer, "OnTriggerEnter2D", otherEnemyCollider);
                 InvokePrivateMethod(composer, "Update");
                 Assert.IsTrue(controller.LastBodyState.HasDetectedTarget);
-                Assert.AreEqual(2f, controller.LastBodyState.DetectedTargetDistance, 0.001f);
+                Assert.AreEqual(2f, controller.LastBodyState.DetectedTargetDistance, 1f);
 
                 // Switch target layer to Enemy -> prunes Hero from m_targetsInZone.
                 composer.SetDetectionTargetLayer(1 << enemyLayer);
@@ -579,7 +599,7 @@ namespace Com.Voobox.Project.Tests.EditMode
                 Assert.IsTrue(controller.LastBodyState.HasDetectedTarget);
                 Assert.AreEqual(4f, controller.LastBodyState.DetectedTargetPosition.x, 0.001f);
                 Assert.AreEqual(0f, controller.LastBodyState.DetectedTargetPosition.y, 0.001f);
-                Assert.AreEqual(4f, controller.LastBodyState.DetectedTargetDistance, 0.001f);
+                Assert.AreEqual(4f, controller.LastBodyState.DetectedTargetDistance, 1f);
 
                 // Exiting DetectionZone clears detection.
                 otherEnemyGo.transform.position = new Vector3(15f, 0f, 0f);

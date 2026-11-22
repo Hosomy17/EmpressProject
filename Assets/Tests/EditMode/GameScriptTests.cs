@@ -14,7 +14,7 @@ namespace Com.Voobox.Project.Tests.EditMode
     {
         private static void InvokePrivateMethod(object target, string methodName)
         {
-            var method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, $"Method '{methodName}' not found on {target.GetType().Name}.");
             method.Invoke(target, null);
         }

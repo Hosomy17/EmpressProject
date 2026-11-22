@@ -10,13 +10,13 @@
 - **Unity CLI Resolution**: `$env:UNITY_EDITOR_PATH` → `C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe` → Unity Hub Editor directory scan (automated by [invoke-unity.ps1](../scripts/invoke-unity.ps1)).
 
 ## 2. Current Feature & Scene Baseline
-- **Hero (`HeroComposer`)**: Decoupled intent via `IHeroController` (`HeroInputController` default, swappable with `HeroBrainController`), horizontal movement (`Movement2DComponent`), Jump + buffer/cut/pogo (`Jump2DComponent`), Dash (`DasherComponent`), 4-way attack + recoil (`AttackerComponent`), Hit Stop (`FrameFreezerComponent`), Screen Shake + camera offset (`ScreenShakerComponent`), Sprite flip & animations (`HeroAnimatorComponent`), Ghost i-frames, Damage/Knockback, Particles, FMOD SFX, Health (`HealthComponent` → emits `HeroDiedEvent`).
+- **Hero (`HeroComposer`)**: Decoupled intent via `IHeroController` (`HeroInputController` default, swappable with `HeroBrainController`), horizontal movement (`Movement2DComponent`), Jump + buffer/cut/pogo (`Jump2DComponent`), Dash (`DasherComponent`), 4-way attack + recoil (`AttackerComponent`), Hit Stop (`FrameFreezerComponent`), Screen Shake + camera offset (`ScreenShakerComponent`), Sprite flip & animations (`HeroAnimatorComponent`), Ghost i-frames, Damage/Knockback via `Hurtbox` child trigger (`Sensor` layer 9, hierarchy layer resolution, no `Hero` ↔ `Enemy` physical collision), Particles, FMOD SFX, Health (`HealthComponent` → emits `HeroDiedEvent`).
 - **Enemy (`EnemyComposer` + `Com.Voobox.Project.AI`)**: Modular, inheritance-free AI (`StateMachineBrainComponent : IEnemyController`, `EnemyContext`, `BrainProfileScriptableObject`, 6 `IAIBehavior` atoms, 9 `IAICondition` atoms), composer-owned `OnTriggerEnter2D` / `OnTriggerExit2D` zone tracking (`DetectionZone` collider on Physics2D `Sensor` layer 9 colliding with `Hero` and `Enemy`), dynamic `SetDetectionRangeMultiplier` / `SetDetectionTargetLayer`, movement + dash lunge + health (`Movement2DComponent`, `DasherComponent`, `HealthComponent`), plus `enemy1.prefab`, `Enemy1Data.asset`, and `Enemy1Brain.asset` (`Idle` / `Combat` / `LungeAttack` / `Waiting` / `Hunting` — not yet placed in any scene).
 - **Boss (`BossComposer`, `BossAttackEmitter`)**: Init (`InitializeBossEvent`), Raise of Swords (`DoRaiseOfSwordsEvent`), Health & damage (`BossData.asset`, `HealthComponent` → emits `BossDiedEvent`). **Not yet implemented**: Boss AI / state machine, additional attack patterns.
 - **Cross-Scene Systems (`Com.Voobox.Project.Systems`)**: `GameScript` (loads `GameOverScene` on `HeroDiedEvent`, `VictoryScene` on `BossDiedEvent`), `PauseController` (Escape toggles pause).
 - **Framework**: `EventBus` (`Com.Voobox.Framework.Events`), `ObjectPooler` / `PooledObject` / `ReturnToPoolBehaviour` (`Com.Voobox.Framework.ObjectPooling`), Steamworks init (`BossSceneScript` + `PlaceSteamName`), `TaskHandle` (`Utils`).
 - **Scenes (4)**: `MainMenuScene.unity`, `BossScene.unity`, `GameOverScene.unity`, `VictoryScene.unity`.
-- **Tests**: 28 EditMode NUnit test fixtures (126 tests) in `Assets/Tests/EditMode/` (`Com.Voobox.Project.Tests.EditMode`). `Assets/Tests/PlayMode/` does not yet exist.
+- **Tests**: 28 EditMode NUnit test fixtures (131 tests) in `Assets/Tests/EditMode/` (`Com.Voobox.Project.Tests.EditMode`). `Assets/Tests/PlayMode/` does not yet exist.
 
 ## 3. Directory Anchor Points
 
@@ -32,5 +32,5 @@
 | `Assets/_Project/InputSystem/` | Generated `InputSystemActions` + `.asmdef` |
 | `Assets/Editor/AgentAutomation/` | Headless Editor batch scripts for scene/prefab ops |
 | `Assets/Tests/EditMode/` | NUnit EditMode test fixtures |
-| `Packages/`, `ProjectSettings/` | UPM manifest/lock and Unity engine settings (`Sensor` layer 9, `Enemy` ↔ `Ground` collision) |
+| `Packages/`, `ProjectSettings/` | UPM manifest/lock and Unity engine settings (`Sensor` layer 9, `Enemy` ↔ `Ground` collision, `Hero` ↔ `Enemy` ignored) |
 | `Logs/` | Ephemeral headless CLI logs (`*.log`) and NUnit XML results (`*-Results.xml`) |
