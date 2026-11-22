@@ -84,6 +84,7 @@ stateDiagram-v2
   2. **Allocation Boundaries**: Verify zero heap allocations inside `Update()`, `FixedUpdate()`, or `LateUpdate()`.
   3. **Event Architecture**: Use the `EventBus` (static publish/subscribe via `IEvent` structs) for cross-entity mediation. Components operate locally via constructor-injected data interfaces.
   4. **Composition Pattern**: New entity behavior must follow the Composer → Component → Data pattern. No monolithic MonoBehaviour scripts combining data, logic, and presentation.
+  5. **Scene Hierarchy**: Any creation or modification of a `.unity` scene (or its `Prefabs/SceneSettings/` role prefabs) must conform to [`.agent-harness/scene-hierarchy-standard.md`](file:///.agent-harness/scene-hierarchy-standard.md) — four ordered `=` separators, prefab-only children, `{SceneName}_{Role}` naming.
 
 ### Rule 3: Explicit SoT Conformance Attestation
 * **Constraint**: The agent **MUST** explicitly state in its task execution logs how the planned changes conform to the Source of Truth *before* invoking verification tests via the Unity CLI.
@@ -156,7 +157,7 @@ stateDiagram-v2
 * Do not hide or suppress CLI output; ensure failures are diagnosed before attempting subsequent passes.
 
 ### Rule 8: Harness Configuration Immutability
-* **Constraint**: Agents must **NEVER** modify core harness configuration files (`agent-rules.md`, `README.md`, `source-of-truth.md`, `task.template.md`, `project-context.md`, or bootstrap scripts) unless explicitly, strictly, and unambiguously instructed to do so by the user's prompt.
+* **Constraint**: Agents must **NEVER** modify core harness configuration files (`agent-rules.md`, `README.md`, `source-of-truth.md`, `scene-hierarchy-standard.md`, `task.template.md`, `project-context.md`, or bootstrap scripts) unless explicitly, strictly, and unambiguously instructed to do so by the user's prompt.
 * **Standard Operating Procedure**: Work within the designated engine folders (`Assets/_Project/`, `Packages/`, `ProjectSettings/`) or task tracking artifacts (`.agent-harness/tasks/`, `.agent-harness/tasks-board.md`).
 
 ### Rule 9: Ambiguity & Clarification Protocol

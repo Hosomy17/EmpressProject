@@ -51,6 +51,7 @@ flowchart TD
 * **Headless Editor Control**: Directly invoke Unity 6 (`6000.3.10f1`) Editor in `-batchmode` without UI overhead.
 * **Official Skills Ecosystem**: Integrated with [`Unity-Technologies/skills`](https://github.com/Unity-Technologies/skills) through the `npx skills` CLI.
 * **Architecture Source of Truth**: Strict architectural governance via [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md) enforcing the Composition + EventBus pattern.
+* **Scene Hierarchy Standard**: Fixed four-separator, prefab-only scene layout defined in [`.agent-harness/scene-hierarchy-standard.md`](file:///.agent-harness/scene-hierarchy-standard.md).
 * **Multi-Agent Task Hand-off**: Decoupled planning, execution, and review cycles via [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md) and `.agent-harness/tasks/`.
 * **Safe Asset Mutation**: No raw `.meta` or binary asset corruption; leverages Unity AssetDatabase and custom Editor batch methods.
 * **Hermetic Verification**: Automated pre-commit verification gates (Compilation, EditMode, and PlayMode tests).
@@ -66,6 +67,7 @@ flowchart LR
         H1["README.md (Entrypoint)"]
         H2["agent-rules.md (Boundaries & Governance)"]
         H3["source-of-truth.md (Architecture SoT)"]
+        H9["scene-hierarchy-standard.md (Scene Layout Standard)"]
         H4["task.template.md (Task Spec Blueprint)"]
         H5["project-context.md (Topology & Baseline)"]
         H6["tasks-board.md (Open Tasks Register)"]
@@ -87,6 +89,7 @@ flowchart LR
 | Path | Ownership | Purpose |
 | :--- | :--- | :--- |
 | `.agent-harness/` | AI Agent & Automation | Harness configuration, operational rules, Source of Truth, bootstrap scripts |
+| `.agent-harness/scene-hierarchy-standard.md` | AI Agent & Automation | Mandatory scene hierarchy layout, naming, and conformance checklist for all `.unity` scenes |
 | `.agent-harness/task.template.md` | AI Planning Agent | Standardized template cloned for all standalone tasks |
 | `.agent-harness/tasks-board.md` | AI Swarm / Team | Central open tasks register tracking `TODO`, `DOING`, `REVIEW` states |
 | `.agent-harness/tasks/` | AI Agents | Active standalone task specifications (`TASK-XXX-name.md`), auto-purged on `DONE` |
@@ -178,7 +181,7 @@ flowchart LR
 
 1. **Bootstrap**: Execute `.agent-harness/bootstrap-harness.bat` (Windows) or `.agent-harness/bootstrap-harness.sh` (macOS/Linux).
 2. **Read Rules**: Review [`.agent-harness/agent-rules.md`](file:///.agent-harness/agent-rules.md) for immutable boundaries and clarification protocols.
-3. **Inspect Context & SoT**: Review [`.agent-harness/project-context.md`](file:///.agent-harness/project-context.md) and validate designs against [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md).
+3. **Inspect Context & SoT**: Review [`.agent-harness/project-context.md`](file:///.agent-harness/project-context.md) and validate designs against [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md). For any scene work, also validate against [`.agent-harness/scene-hierarchy-standard.md`](file:///.agent-harness/scene-hierarchy-standard.md).
 4. **Plan & Pause for Consent**: Inspect [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md). For any new implementation request, create `.agent-harness/tasks/TASK-XXX-<name>.md` from `task.template.md`, register it as `TODO`, and **pause for user consent** before delegating execution (Rule 11).
 5. **Attest & Execute (Subagent)**: After user consent, the Execution subagent claims the task (`DOING`), states SoT conformance in logs, executes via skills/CLI, verifies with automated tests, and submits for `REVIEW`.
 6. **Review, Pause for Consent & Closeout (Tech Lead)**: Verify the diff and test results, **pause for user review and consent** on `REVIEW`, and upon approval mark `DONE`, purge `TASK-XXX.md`, remove its row from `tasks-board.md`, and update `project-context.md` if the broader architecture shifted.
