@@ -20,9 +20,10 @@ flowchart TD
         SteamEvts["Com.Voobox.Project.Events.SteamworksEvents"]
     end
 
-    subgraph MidLayer["Shared Utilities, Data & Components"]
+    subgraph MidLayer["Shared Utilities, Data, AI & Components"]
         ProjOthers["Com.Voobox.Project.Others"]
         ProjData["Com.Voobox.Project.Data"]
+        ProjAI["Com.Voobox.Project.AI"]
         ProjComp["Com.Voobox.Project.Component"]
     end
 
@@ -46,10 +47,15 @@ flowchart TD
 
     ProjData --> ProjOthers
 
+    ProjAI --> ProjData
+    ProjAI --> ProjUtils
+
     ProjComp --> ProjData
     ProjComp --> ProjOthers
     ProjComp --> ProjUtils
+    ProjComp --> ProjInput
 
+    ProjEntity --> ProjAI
     ProjEntity --> ProjComp
     ProjEntity --> ProjData
     ProjEntity --> ProjOthers

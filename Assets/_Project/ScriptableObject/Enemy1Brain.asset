@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e499b01bfc90c0540848b48463dc6ac4, type: 3}
+  m_Name: Enemy1Brain
+  m_EditorClassIdentifier: Com.Voobox.Project.AI::Com.Voobox.Project.AI.BrainProfileScriptableObject
+  m_initialStateId: Idle
+  m_states:
+  - m_stateId: Idle
+    m_behaviors:
+    - rid: 6680495726320156672
+    m_transitions:
+    - m_targetStateId: Combat
+      m_condition:
+        rid: 6680495726320156673
+  - m_stateId: Combat
+    m_behaviors:
+    - rid: 6680495726320156674
+    m_transitions:
+    - m_targetStateId: Hunting
+      m_condition:
+        rid: 6680495726320156675
+    - m_targetStateId: LungeAttack
+      m_condition:
+        rid: 6680495726320156676
+  - m_stateId: LungeAttack
+    m_behaviors:
+    - rid: 6680495726320156677
+    m_transitions:
+    - m_targetStateId: Waiting
+      m_condition:
+        rid: 6680495726320156678
+  - m_stateId: Waiting
+    m_behaviors:
+    - rid: 6680495726320156679
+    m_transitions:
+    - m_targetStateId: Combat
+      m_condition:
+        rid: 6680495726320156680
+    - m_targetStateId: Idle
+      m_condition:
+        rid: 6680495726320156681
+  - m_stateId: Hunting
+    m_behaviors:
+    - rid: 6680495726320156682
+    m_transitions:
+    - m_targetStateId: Combat
+      m_condition:
+        rid: 6680495726320156683
+  m_globalTransitions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 6680495726320156672
+      type: {class: IdleBehavior, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156673
+      type: {class: TargetEnteredZoneCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156674
+      type: {class: MoveTowardTargetBehavior, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_speedMultiplier: 1
+        m_stopDistance: 2.5
+    - rid: 6680495726320156675
+      type: {class: TargetExitedZoneCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156676
+      type: {class: AllOfCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_conditions:
+        - rid: 6680495726320156684
+        - rid: 6680495726320156685
+    - rid: 6680495726320156677
+      type: {class: RequestDashBehavior, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156678
+      type: {class: BodyFlagCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_flag: 2
+        m_expectedValue: 0
+    - rid: 6680495726320156679
+      type: {class: IdleBehavior, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156680
+      type: {class: AllOfCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_conditions:
+        - rid: 6680495726320156686
+        - rid: 6680495726320156687
+    - rid: 6680495726320156681
+      type: {class: AllOfCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_conditions:
+        - rid: 6680495726320156688
+        - rid: 6680495726320156689
+    - rid: 6680495726320156682
+      type: {class: MoveTowardTargetBehavior, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_speedMultiplier: 1.6
+        m_stopDistance: 0
+    - rid: 6680495726320156683
+      type: {class: TargetEnteredZoneCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156684
+      type: {class: TargetWithinDistanceCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_minDistance: 2.5
+    - rid: 6680495726320156685
+      type: {class: BodyFlagCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_flag: 4
+        m_expectedValue: 1
+    - rid: 6680495726320156686
+      type: {class: StateElapsedCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_duration: 1.5
+    - rid: 6680495726320156687
+      type: {class: TargetWithinDetectionRangeCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
+    - rid: 6680495726320156688
+      type: {class: StateElapsedCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_duration: 1.5
+    - rid: 6680495726320156689
+      type: {class: NotCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data:
+        m_condition:
+          rid: 6680495726320156690
+    - rid: 6680495726320156690
+      type: {class: TargetWithinDetectionRangeCondition, ns: Com.Voobox.Project.AI, asm: Com.Voobox.Project.AI}
+      data: 
