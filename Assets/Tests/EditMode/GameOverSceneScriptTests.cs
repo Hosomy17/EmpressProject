@@ -49,21 +49,21 @@ namespace Com.Voobox.Project.Tests.EditMode
             m_openedScene = EditorSceneManager.OpenScene(GAME_OVER_SCENE_PATH, OpenSceneMode.Single);
             Assert.IsTrue(m_openedScene.IsValid(), "GameOverScene failed to open.");
 
-            Camera mainCamera = Object.FindFirstObjectByType<Camera>();
+            var mainCamera = Object.FindFirstObjectByType<Camera>();
             Assert.IsNotNull(mainCamera, "GameOverScene must contain a Camera.");
 
-            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+            var canvas = Object.FindFirstObjectByType<Canvas>();
             Assert.IsNotNull(canvas, "GameOverScene must contain a Canvas.");
             Assert.AreEqual(RenderMode.ScreenSpaceOverlay, canvas.renderMode);
 
-            CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+            var scaler = canvas.GetComponent<CanvasScaler>();
             Assert.IsNotNull(scaler, "Canvas must have a CanvasScaler.");
             Assert.AreEqual(CanvasScaler.ScaleMode.ScaleWithScreenSize, scaler.uiScaleMode);
             Assert.AreEqual(new Vector2(1920f, 1080f), scaler.referenceResolution);
 
             Assert.IsNotNull(canvas.GetComponent<GraphicRaycaster>(), "Canvas must have a GraphicRaycaster.");
 
-            EventSystem eventSystem = Object.FindFirstObjectByType<EventSystem>();
+            var eventSystem = Object.FindFirstObjectByType<EventSystem>();
             Assert.IsNotNull(eventSystem, "GameOverScene must contain an EventSystem.");
             Assert.IsNotNull(
                 eventSystem.GetComponent<InputSystemUIInputModule>(),
@@ -71,7 +71,7 @@ namespace Com.Voobox.Project.Tests.EditMode
 
             Transform continueTextTransform = canvas.transform.Find("ContinueText");
             Assert.IsNotNull(continueTextTransform, "Canvas must contain a ContinueText child.");
-            TMP_Text continueText = continueTextTransform.GetComponent<TMP_Text>();
+            var continueText = continueTextTransform.GetComponent<TMP_Text>();
             Assert.IsNotNull(continueText, "ContinueText must have a TMP_Text component.");
             Assert.AreEqual("Continue?", continueText.text);
             Assert.GreaterOrEqual(continueText.fontSize, 48f, "ContinueText should have a large font size.");
@@ -80,7 +80,7 @@ namespace Com.Voobox.Project.Tests.EditMode
             Button yesButton = AssertButton(canvas.transform, "YesButton", "Yes");
             Button noButton = AssertButton(canvas.transform, "NoButton", "No");
 
-            GameOverSceneScript sceneScript = Object.FindFirstObjectByType<GameOverSceneScript>();
+            var sceneScript = Object.FindFirstObjectByType<GameOverSceneScript>();
             Assert.IsNotNull(sceneScript, "GameOverScene must contain a GameOverSceneScript component.");
 
             FieldInfo yesButtonField = typeof(GameOverSceneScript).GetField(
@@ -101,18 +101,18 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void GameOverSceneScript_AwakeAndOnDestroy_ExecuteSafely()
         {
-            GameObject go = new GameObject("GameOverSceneScriptUnitTest");
+            var go = new GameObject("GameOverSceneScriptUnitTest");
             try
             {
-                GameObject yesGo = new GameObject("Yes");
+                var yesGo = new GameObject("Yes");
                 yesGo.transform.SetParent(go.transform);
-                Button yesButton = yesGo.AddComponent<Button>();
+                var yesButton = yesGo.AddComponent<Button>();
 
-                GameObject noGo = new GameObject("No");
+                var noGo = new GameObject("No");
                 noGo.transform.SetParent(go.transform);
-                Button noButton = noGo.AddComponent<Button>();
+                var noButton = noGo.AddComponent<Button>();
 
-                GameOverSceneScript script = go.AddComponent<GameOverSceneScript>();
+                var script = go.AddComponent<GameOverSceneScript>();
 
                 FieldInfo yesButtonField = typeof(GameOverSceneScript).GetField(
                     "m_yesButton",
@@ -150,14 +150,14 @@ namespace Com.Voobox.Project.Tests.EditMode
             Transform buttonTransform = canvasTransform.Find(buttonName);
             Assert.IsNotNull(buttonTransform, $"Canvas must contain a {buttonName} child.");
 
-            Button button = buttonTransform.GetComponent<Button>();
+            var button = buttonTransform.GetComponent<Button>();
             Assert.IsNotNull(button, $"{buttonName} must have a Button component.");
 
-            Image buttonImage = buttonTransform.GetComponent<Image>();
+            var buttonImage = buttonTransform.GetComponent<Image>();
             Assert.IsNotNull(buttonImage, $"{buttonName} must have an Image component.");
             Assert.IsNotNull(buttonImage.sprite, $"{buttonName} Image must have a valid Sprite assigned.");
 
-            TMP_Text buttonText = buttonTransform.GetComponentInChildren<TMP_Text>();
+            var buttonText = buttonTransform.GetComponentInChildren<TMP_Text>();
             Assert.IsNotNull(buttonText, $"{buttonName} must contain a TMP_Text label.");
             Assert.AreEqual(expectedLabel, buttonText.text);
             Assert.IsNotNull(buttonText.font, $"{buttonName} Text must have a Font assigned.");

@@ -60,7 +60,7 @@ namespace Com.Voobox.Project.Tests.EditMode
             };
 
             var dasher = new DasherComponent(dasherData);
-            var played = false;
+            bool played = false;
 
             Assert.DoesNotThrow(() => played = dasher.TryPlayDashSfx());
             Assert.IsFalse(played);

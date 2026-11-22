@@ -27,7 +27,7 @@ namespace Com.Voobox.Project.Component
 
         public void StabilizeTargetOffset()
         {
-            var targetOffsetY = Mathf.Clamp(m_rigidbody2D.linearVelocity.y, TARGET_OFFSET_Y, 0f);
+            float targetOffsetY = Mathf.Clamp(m_rigidbody2D.linearVelocity.y, TARGET_OFFSET_Y, 0f);
             m_positionComposer.TargetOffset.y = Mathf.Lerp(m_positionComposer.TargetOffset.y, targetOffsetY, Time.deltaTime * m_screenShakerData.SmoothSpeed);
             m_positionComposer.TargetOffset.x = Mathf.Lerp(m_positionComposer.TargetOffset.x, m_currentTargetOffsetX, Time.deltaTime * m_screenShakerData.SmoothSpeed);
         }
@@ -42,7 +42,7 @@ namespace Com.Voobox.Project.Component
 
         public void ShakeDirection(float direction)
         {
-            var screenShakeDirection = m_screenShakerData.ScreenShakeDirection;
+            Vector2 screenShakeDirection = m_screenShakerData.ScreenShakeDirection;
             screenShakeDirection.x *= direction;
             m_impulseSource.GenerateImpulseWithVelocity(screenShakeDirection * m_screenShakerData.ScreenShakeForce);
         }

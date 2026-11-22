@@ -22,7 +22,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            for (var i = m_createdObjects.Count - 1; i >= 0; i--)
+            for (int i = m_createdObjects.Count - 1; i >= 0; i--)
             {
                 if (m_createdObjects[i] != null)
                     Object.DestroyImmediate(m_createdObjects[i]);
@@ -35,7 +35,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Awake_SetsSingletonInstance()
         {
-            var pooler = CreatePooler("Pooler_Primary");
+            ObjectPooler pooler = CreatePooler("Pooler_Primary");
 
             InvokeAwake(pooler);
 
@@ -45,10 +45,10 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Awake_DuplicateInstance_KeepsOriginalAndDestroysDuplicate()
         {
-            var firstPooler = CreatePooler("Pooler_First");
+            ObjectPooler firstPooler = CreatePooler("Pooler_First");
             InvokeAwake(firstPooler);
 
-            var secondPooler = CreatePooler("Pooler_Duplicate");
+            ObjectPooler secondPooler = CreatePooler("Pooler_Duplicate");
             LogAssert.Expect(LogType.Error, new Regex("Destroy may not be called from edit mode"));
 
             InvokeAwake(secondPooler);
@@ -59,7 +59,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void ReturnToPool_NullObject_DoesNotThrow()
         {
-            var pooler = CreatePooler("Pooler_ReturnNull");
+            ObjectPooler pooler = CreatePooler("Pooler_ReturnNull");
             InvokeAwake(pooler);
 
             Assert.DoesNotThrow(() => pooler.ReturnToPool(null));
@@ -68,9 +68,9 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void ReturnToPool_NonPooledObject_DestroysSafelyWithoutThrowing()
         {
-            var pooler = CreatePooler("Pooler_ReturnNonPooled");
+            ObjectPooler pooler = CreatePooler("Pooler_ReturnNonPooled");
             InvokeAwake(pooler);
-            var nonPooled = TrackObject(new GameObject("NonPooledObject"));
+            GameObject nonPooled = TrackObject(new GameObject("NonPooledObject"));
 
             LogAssert.Expect(LogType.Error, new Regex("Destroy may not be called from edit mode"));
 
@@ -80,13 +80,13 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void ReturnToPool_PooledObject_DeactivatesReparentsAndEnqueues()
         {
-            var pooler = CreatePooler("Pooler_ReturnPooled");
+            ObjectPooler pooler = CreatePooler("Pooler_ReturnPooled");
             InvokeAwake(pooler);
 
             var assetRef = new AssetReferenceGameObject("test-guid-001");
-            var key = assetRef.RuntimeKey;
+            object key = assetRef.RuntimeKey;
 
-            var poolParentGo = TrackObject(new GameObject("[Pool] Test"));
+            GameObject poolParentGo = TrackObject(new GameObject("[Pool] Test"));
             poolParentGo.transform.SetParent(pooler.transform);
 
             var poolDictionary = GetPrivateField<Dictionary<object, Queue<GameObject>>>(pooler, "m_poolDictionary");
@@ -96,7 +96,7 @@ namespace Com.Voobox.Project.Tests.EditMode
             poolDictionary.Add(key, queue);
             poolParents.Add(key, poolParentGo.transform);
 
-            var pooledObj = TrackObject(new GameObject("PooledObjectInstance"));
+            GameObject pooledObj = TrackObject(new GameObject("PooledObjectInstance"));
             var identity = pooledObj.AddComponent<PooledObject>();
             identity.Initialize(assetRef);
             Assert.IsTrue(pooledObj.activeSelf);
@@ -111,7 +111,7 @@ namespace Com.Voobox.Project.Tests.EditMode
 
         private ObjectPooler CreatePooler(string name)
         {
-            var go = TrackObject(new GameObject(name));
+            GameObject go = TrackObject(new GameObject(name));
             return go.AddComponent<ObjectPooler>();
         }
 
@@ -123,14 +123,14 @@ namespace Com.Voobox.Project.Tests.EditMode
 
         private static void InvokeAwake(ObjectPooler pooler)
         {
-            var awakeMethod = typeof(ObjectPooler).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo awakeMethod = typeof(ObjectPooler).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(awakeMethod, "ObjectPooler.Awake method was not found.");
             awakeMethod.Invoke(pooler, null);
         }
 
         private static T GetPrivateField<T>(object instance, string fieldName)
         {
-            var field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = instance.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, $"Field '{fieldName}' was not found on {instance.GetType().Name}.");
             return (T)field.GetValue(instance);
         }
@@ -140,7 +140,7 @@ namespace Com.Voobox.Project.Tests.EditMode
             if (ObjectPooler.Instance != null && ObjectPooler.Instance.gameObject != null)
                 Object.DestroyImmediate(ObjectPooler.Instance.gameObject);
 
-            var instanceProp = typeof(ObjectPooler).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            PropertyInfo instanceProp = typeof(ObjectPooler).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
             instanceProp?.SetValue(null, null);
         }
     }

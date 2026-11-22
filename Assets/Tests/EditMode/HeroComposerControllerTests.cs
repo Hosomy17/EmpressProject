@@ -32,14 +32,14 @@ namespace Com.Voobox.Project.Tests.EditMode
 
         private static void SetPrivateField(object target, string fieldName, object value)
         {
-            var field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, $"Field '{fieldName}' not found on {target.GetType().Name}.");
             field.SetValue(target, value);
         }
 
         private static void InvokePrivateMethod(object target, string methodName, params object[] args)
         {
-            var method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, $"Method '{methodName}' not found on {target.GetType().Name}.");
             method.Invoke(target, args);
         }
@@ -93,7 +93,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void SetController_SwapsIntentSource_AndManagesEnableDisableLifecycle()
         {
-            var (heroGo, composer, dataSo) = CreateHero();
+            (GameObject heroGo, HeroComposer composer, HeroDataScriptableObject dataSo) = CreateHero();
             var controllerA = new StubHeroController();
             var controllerB = new StubHeroController();
 
@@ -126,7 +126,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void SetController_DrivesVelocityWithSpeedMultiplier_AndFlipsSprite()
         {
-            var (heroGo, composer, dataSo) = CreateHero(speed: 8f);
+            (GameObject heroGo, HeroComposer composer, HeroDataScriptableObject dataSo) = CreateHero(speed: 8f);
             var controller = new StubHeroController();
 
             try
@@ -171,7 +171,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Update_PassesAccurateHeroBodyState_ToController()
         {
-            var (heroGo, composer, dataSo) = CreateHero(maxHitPoints: 4);
+            (GameObject heroGo, HeroComposer composer, HeroDataScriptableObject dataSo) = CreateHero(maxHitPoints: 4);
             var controller = new StubHeroController();
 
             try
@@ -223,7 +223,7 @@ namespace Com.Voobox.Project.Tests.EditMode
             controller.Enable();
 
             var body = new HeroBodyState { IsGrounded = true };
-            var intent = controller.SampleIntent(in body, 0.016f);
+            HeroIntent intent = controller.SampleIntent(in body, 0.016f);
 
             Assert.AreEqual(Vector2.zero, intent.MoveAxis);
             Assert.AreEqual(1f, intent.SpeedMultiplier, 0.001f);

@@ -49,21 +49,21 @@ namespace Com.Voobox.Project.Tests.EditMode
             m_openedScene = EditorSceneManager.OpenScene(MAIN_SCREEN_SCENE_PATH, OpenSceneMode.Single);
             Assert.IsTrue(m_openedScene.IsValid(), "MainScreenScene failed to open.");
 
-            Camera mainCamera = Object.FindFirstObjectByType<Camera>();
+            var mainCamera = Object.FindFirstObjectByType<Camera>();
             Assert.IsNotNull(mainCamera, "MainScreenScene must contain a Camera.");
 
-            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+            var canvas = Object.FindFirstObjectByType<Canvas>();
             Assert.IsNotNull(canvas, "MainScreenScene must contain a Canvas.");
             Assert.AreEqual(RenderMode.ScreenSpaceOverlay, canvas.renderMode);
 
-            CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+            var scaler = canvas.GetComponent<CanvasScaler>();
             Assert.IsNotNull(scaler, "Canvas must have a CanvasScaler.");
             Assert.AreEqual(CanvasScaler.ScaleMode.ScaleWithScreenSize, scaler.uiScaleMode);
             Assert.AreEqual(new Vector2(1920f, 1080f), scaler.referenceResolution);
 
             Assert.IsNotNull(canvas.GetComponent<GraphicRaycaster>(), "Canvas must have a GraphicRaycaster.");
 
-            EventSystem eventSystem = Object.FindFirstObjectByType<EventSystem>();
+            var eventSystem = Object.FindFirstObjectByType<EventSystem>();
             Assert.IsNotNull(eventSystem, "MainScreenScene must contain an EventSystem.");
             Assert.IsNotNull(
                 eventSystem.GetComponent<InputSystemUIInputModule>(),
@@ -71,24 +71,24 @@ namespace Com.Voobox.Project.Tests.EditMode
 
             Transform splashTransform = canvas.transform.Find("SplashImage");
             Assert.IsNotNull(splashTransform, "Canvas must contain a SplashImage child.");
-            Image splashImage = splashTransform.GetComponent<Image>();
+            var splashImage = splashTransform.GetComponent<Image>();
             Assert.IsNotNull(splashImage, "SplashImage must have an Image component.");
             Assert.IsNotNull(splashImage.sprite, "SplashImage must have a valid Sprite assigned.");
 
             Transform startButtonTransform = canvas.transform.Find("StartButton");
             Assert.IsNotNull(startButtonTransform, "Canvas must contain a StartButton child.");
-            Button startButton = startButtonTransform.GetComponent<Button>();
+            var startButton = startButtonTransform.GetComponent<Button>();
             Assert.IsNotNull(startButton, "StartButton must have a Button component.");
-            Image buttonImage = startButtonTransform.GetComponent<Image>();
+            var buttonImage = startButtonTransform.GetComponent<Image>();
             Assert.IsNotNull(buttonImage, "StartButton must have an Image component.");
             Assert.IsNotNull(buttonImage.sprite, "StartButton Image must have a valid Sprite assigned.");
 
-            TMP_Text buttonText = startButtonTransform.GetComponentInChildren<TMP_Text>();
+            var buttonText = startButtonTransform.GetComponentInChildren<TMP_Text>();
             Assert.IsNotNull(buttonText, "StartButton must contain a Text label.");
             Assert.AreEqual("START", buttonText.text);
             Assert.IsNotNull(buttonText.font, "StartButton Text must have a Font assigned.");
 
-            MainScreenScript mainScreenScript = Object.FindFirstObjectByType<MainScreenScript>();
+            var mainScreenScript = Object.FindFirstObjectByType<MainScreenScript>();
             Assert.IsNotNull(mainScreenScript, "MainScreenScene must contain a MainScreenScript component.");
 
             FieldInfo startButtonField = typeof(MainScreenScript).GetField(
@@ -102,11 +102,11 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void MainScreenScript_AwakeAndOnDestroy_ExecuteSafely()
         {
-            GameObject go = new GameObject("MainScreenScriptUnitTest");
+            var go = new GameObject("MainScreenScriptUnitTest");
             try
             {
-                Button button = go.AddComponent<Button>();
-                MainScreenScript script = go.AddComponent<MainScreenScript>();
+                var button = go.AddComponent<Button>();
+                var script = go.AddComponent<MainScreenScript>();
 
                 FieldInfo startButtonField = typeof(MainScreenScript).GetField(
                     "m_startButton",

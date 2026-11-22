@@ -35,7 +35,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             if (m_placeSteamName != null)
             {
-                var method = typeof(PlaceSteamName).GetMethod(
+                MethodInfo method = typeof(PlaceSteamName).GetMethod(
                     "OnInitializeSteamworks",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 if (method != null)
@@ -59,7 +59,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             InvokePrivateMethod(m_placeSteamName, "Awake");
 
-            var subscribersField = typeof(EventBus).GetField(
+            FieldInfo subscribersField = typeof(EventBus).GetField(
                 "m_subscribers",
                 BindingFlags.Static | BindingFlags.NonPublic);
             Assert.IsNotNull(subscribersField, "EventBus.m_subscribers field not found.");
@@ -67,11 +67,11 @@ namespace Com.Voobox.Project.Tests.EditMode
             var subscribers = subscribersField.GetValue(null) as Dictionary<Type, List<Delegate>>;
             Assert.IsNotNull(subscribers, "EventBus.m_subscribers dictionary is null.");
             Assert.IsTrue(
-                subscribers.TryGetValue(typeof(InitializeSteamworksEvent), out var callbacks),
+                subscribers.TryGetValue(typeof(InitializeSteamworksEvent), out List<Delegate> callbacks),
                 "Expected InitializeSteamworksEvent to have subscribers after Awake().");
 
             bool foundSubscriber = false;
-            foreach (var callback in callbacks)
+            foreach (Delegate callback in callbacks)
             {
                 if (ReferenceEquals(callback.Target, m_placeSteamName) &&
                     callback.Method.Name == "OnInitializeSteamworks")
@@ -113,14 +113,14 @@ namespace Com.Voobox.Project.Tests.EditMode
 
         private static void SetPrivateField(object target, string fieldName, object value)
         {
-            var field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, $"Field '{fieldName}' not found on {target.GetType().Name}.");
             field.SetValue(target, value);
         }
 
         private static void InvokePrivateMethod(object target, string methodName, params object[] args)
         {
-            var method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo method = target.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, $"Method '{methodName}' not found on {target.GetType().Name}.");
             method.Invoke(target, args);
         }

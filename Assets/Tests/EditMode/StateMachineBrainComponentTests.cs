@@ -347,7 +347,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Composability_SupportsTwoDistinctHuntingStates_WithoutInheritance()
         {
-            var profile = CreateProfile(
+            BrainProfileScriptableObject profile = CreateProfile(
                 "Idle",
                 new List<AIStateDefinition>
                 {
@@ -382,7 +382,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Composability_EnemyWithoutCombatState_TransitionsDirectlyIdleToHuntingToIdle()
         {
-            var profile = CreateProfile(
+            BrainProfileScriptableObject profile = CreateProfile(
                 "Idle",
                 new List<AIStateDefinition>
                 {
@@ -416,7 +416,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void Composability_StationaryEnemy_FacesTargetWithoutMovementOrAttack()
         {
-            var profile = CreateProfile(
+            BrainProfileScriptableObject profile = CreateProfile(
                 "Idle",
                 new List<AIStateDefinition>
                 {
@@ -448,7 +448,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void RequestAttackBehavior_AndDisableEnable_RespectBodyFlagsAndControllerLifecycle()
         {
-            var profile = CreateProfile(
+            BrainProfileScriptableObject profile = CreateProfile(
                 "Idle",
                 new List<AIStateDefinition>
                 {
@@ -488,7 +488,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         [Test]
         public void HeroBrainController_MapsHeroBodyStateToHeroIntent_IncludingAttackDashAndMoveFields()
         {
-            var profile = CreateProfile(
+            BrainProfileScriptableObject profile = CreateProfile(
                 "Idle",
                 new List<AIStateDefinition>
                 {

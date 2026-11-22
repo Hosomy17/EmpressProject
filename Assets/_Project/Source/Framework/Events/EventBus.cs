@@ -9,7 +9,7 @@ namespace Com.Voobox.Framework.Events
 
         public static void Subscribe<T>(Action<T> callback) where T : IEvent
         {
-            var eventType = typeof(T);
+            Type eventType = typeof(T);
 
             if (!m_subscribers.ContainsKey(eventType))
                 m_subscribers[eventType] = new List<Delegate>();
@@ -19,9 +19,9 @@ namespace Com.Voobox.Framework.Events
 
         public static void Unsubscribe<T>(Action<T> callback) where T : IEvent
         {
-            var eventType = typeof(T);
+            Type eventType = typeof(T);
 
-            if (!m_subscribers.TryGetValue(eventType, out var subscriber)) return;
+            if (!m_subscribers.TryGetValue(eventType, out List<Delegate> subscriber)) return;
             subscriber.Remove(callback);
 
             if (m_subscribers[eventType].Count == 0)
@@ -30,10 +30,10 @@ namespace Com.Voobox.Framework.Events
 
         public static void Notify<T>(T eventArgs) where T : IEvent
         {
-            var eventType = typeof(T);
+            Type eventType = typeof(T);
 
-            if (!m_subscribers.TryGetValue(eventType, out var callbacks)) return;
-            foreach (var callback in callbacks)
+            if (!m_subscribers.TryGetValue(eventType, out List<Delegate> callbacks)) return;
+            foreach (Delegate callback in callbacks)
             {
                 (callback as Action<T>)?.Invoke(eventArgs);
             }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace Com.Voobox.Framework.ObjectPooling
 {
@@ -30,7 +31,7 @@ namespace Com.Voobox.Framework.ObjectPooling
         {
             if (m_poolsToPreWarm == null) return;
 
-            foreach (var poolConfiguration in m_poolsToPreWarm)
+            foreach (PoolConfiguration poolConfiguration in m_poolsToPreWarm)
             {
                 if (poolConfiguration.m_assetReference != null && poolConfiguration.m_assetReference.RuntimeKeyIsValid())
                     await PreWarmPoolAsync(poolConfiguration.m_assetReference, poolConfiguration.m_preWarmAmount);
@@ -39,15 +40,15 @@ namespace Com.Voobox.Framework.ObjectPooling
 
         private async UniTask PreWarmPoolAsync(AssetReferenceGameObject assetReference, int amount)
         {
-            var key = assetReference.RuntimeKey;
+            object key = assetReference.RuntimeKey;
 
             if (!m_poolDictionary.ContainsKey(key))
                 m_poolDictionary.Add(key, new Queue<GameObject>());
 
             if (!m_poolParents.ContainsKey(key))
             {
-                var prefabName = "Unknown_Addressable";
-                var locations = await Addressables.LoadResourceLocationsAsync(assetReference).ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
+                string prefabName = "Unknown_Addressable";
+                IList<IResourceLocation> locations = await Addressables.LoadResourceLocationsAsync(assetReference).ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
 
                 if (locations is { Count: > 0 })
                     prefabName = System.IO.Path.GetFileNameWithoutExtension(locations[0].PrimaryKey);
@@ -57,17 +58,17 @@ namespace Com.Voobox.Framework.ObjectPooling
                 m_poolParents.Add(key, newParent.transform);
             }
 
-            var poolParent = m_poolParents[key];
+            Transform poolParent = m_poolParents[key];
             var instantiationTasks = new List<UniTask<GameObject>>();
 
-            for (var i = 0; i < amount; i++)
+            for (int i = 0; i < amount; i++)
             {
-                var task = assetReference.InstantiateAsync(poolParent).ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
+                UniTask<GameObject> task = assetReference.InstantiateAsync(poolParent).ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
                 instantiationTasks.Add(task);
             }
 
-            var spawnedObjects = await UniTask.WhenAll(instantiationTasks);
-            foreach (var obj in spawnedObjects)
+            GameObject[] spawnedObjects = await UniTask.WhenAll(instantiationTasks);
+            foreach (GameObject obj in spawnedObjects)
             {
                 obj.SetActive(false);
                 var identity = obj.AddComponent<PooledObject>();
@@ -80,7 +81,7 @@ namespace Com.Voobox.Framework.ObjectPooling
         {
             if (assetReference == null || !assetReference.RuntimeKeyIsValid()) return null;
 
-            var key = assetReference.RuntimeKey;
+            object key = assetReference.RuntimeKey;
 
             if (!m_poolDictionary.ContainsKey(key))
                 await PreWarmPoolAsync(assetReference, 0);
@@ -117,8 +118,8 @@ namespace Com.Voobox.Framework.ObjectPooling
                 return;
             }
 
-            var assetRef = identity.AssetReferenceOrigin;
-            var key = assetRef.RuntimeKey;
+            AssetReferenceGameObject assetRef = identity.AssetReferenceOrigin;
+            object key = assetRef.RuntimeKey;
 
             identity.Deactivate();
             identity.transform.SetParent(m_poolParents[key]);//TODO

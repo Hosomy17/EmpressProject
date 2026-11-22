@@ -39,7 +39,7 @@ namespace Com.Voobox.Project.Others//TODO
             OnHitSuccess?.Invoke();
             m_collider.enabled = false;
 
-            var position = collision.ClosestPoint(transform.position);
+            Vector2 position = collision.ClosestPoint(transform.position);
             CallVfxImpact(position);
         }
 
