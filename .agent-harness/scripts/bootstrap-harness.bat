@@ -1,14 +1,21 @@
 @echo off
 setlocal enabledelayedexpansion
 
+set "REPO_ROOT=%~dp0..\.."
+pushd "%REPO_ROOT%" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Failed to resolve repository root from "%~dp0".
+    exit /b 1
+)
+
 echo ====================================================================
-echo         Empress Project — AI Agent Harness Bootstrapper [Windows]
+echo         Empress Project - AI Agent Harness Bootstrapper [Windows]
 echo ====================================================================
 
 set "STATUS_NODE=FAIL"
 set "STATUS_UNITY=WARN"
 set "STATUS_SKILLS=FAIL"
-set "STATUS_SOT=FAIL"
+set "STATUS_HARNESS=FAIL"
 
 :: ----------------------------------------------------------------------
 :: 1. Verify Node.js and npx
@@ -55,7 +62,6 @@ if defined UNITY_EDITOR_PATH (
     )
 )
 
-:: Check exact project version first
 set "EXACT_UNITY=%ProgramFiles%\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe"
 if exist "%EXACT_UNITY%" (
     set "UNITY_EDITOR_PATH=%EXACT_UNITY%"
@@ -65,7 +71,6 @@ if exist "%EXACT_UNITY%" (
     goto :unity_checked
 )
 
-:: Fallback: Check default Unity Hub Editor installation path
 set "HUB_EDITOR_DIR=%ProgramFiles%\Unity\Hub\Editor"
 if exist "%HUB_EDITOR_DIR%" (
     for /f "delims=" %%D in ('dir /b /ad /o-n "%HUB_EDITOR_DIR%" 2^>nul') do (
@@ -80,7 +85,6 @@ if exist "%HUB_EDITOR_DIR%" (
     )
 )
 
-:: Check unityhub CLI
 where unityhub >nul 2>&1
 if %errorlevel% equ 0 (
     echo     [OK] Unity Hub CLI detected in system PATH.
@@ -89,50 +93,39 @@ if %errorlevel% equ 0 (
 )
 
 echo     [WARN] Unity Editor executable could not be auto-detected.
-echo     Please set the UNITY_EDITOR_PATH environment variable, e.g.:
+echo     Please set UNITY_EDITOR_PATH, e.g.:
 echo     setx UNITY_EDITOR_PATH "C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe"
 
 :unity_checked
 
 :: ----------------------------------------------------------------------
-:: 3. Verify Source of Truth (SoT) Integrity
+:: 3. Verify Harness and Skills Integrity
 :: ----------------------------------------------------------------------
 echo.
-echo [3/5] Verifying Architecture Source of Truth [SoT]...
+echo [3/5] Verifying Harness and Skills Integrity...
 
-set "SOT_FILE="
-if exist ".agent-harness\source-of-truth.md" set "SOT_FILE=.agent-harness\source-of-truth.md"
-if not defined SOT_FILE (
-    if exist ".agent-harness\source-of-truth.template.md" set "SOT_FILE=.agent-harness\source-of-truth.template.md"
-)
-
-if not defined SOT_FILE (
-    echo     [ERROR] source-of-truth.md was NOT found in .agent-harness/
-    goto :sot_done
-)
-
-for %%F in ("!SOT_FILE!") do set "SOT_SIZE=%%~zF"
-if !SOT_SIZE! gtr 0 (
-    echo     [OK] Source of Truth verified and readable:
-    echo          "!SOT_FILE!" [!SOT_SIZE! bytes]
-    set "STATUS_SOT=OK"
-) else (
-    echo     [ERROR] "!SOT_FILE!" is empty [0 bytes].
-)
-
-set "TASK_TPL_FILE="
-if exist ".agent-harness\task.template.md" set "TASK_TPL_FILE=.agent-harness\task.template.md"
-if defined TASK_TPL_FILE (
-    for %%F in ("!TASK_TPL_FILE!") do set "TPL_SIZE=%%~zF"
-    if !TPL_SIZE! gtr 0 (
-        echo     [OK] Task template verified and readable:
-        echo          "!TASK_TPL_FILE!" [!TPL_SIZE! bytes]
+set "MISSING_CORE=0"
+for %%F in (
+    "AGENTS.md"
+    ".agent-harness\architecture\core-patterns.md"
+    ".agent-harness\task.template.md"
+    ".agents\skills\unity-test-runner\SKILL.md"
+) do (
+    if exist %%F (
+        for %%S in (%%F) do set "FSIZE=%%~zS"
+        if !FSIZE! gtr 0 (
+            echo     [OK] %%~F [!FSIZE! bytes]
+        ) else (
+            echo     [ERROR] %%~F is empty [0 bytes].
+            set "MISSING_CORE=1"
+        )
+    ) else (
+        echo     [ERROR] %%~F was NOT found.
+        set "MISSING_CORE=1"
     )
-) else (
-    echo     [WARN] task.template.md was NOT found in .agent-harness/
 )
 
-:sot_done
+if "!MISSING_CORE!"=="0" set "STATUS_HARNESS=OK"
 
 :: ----------------------------------------------------------------------
 :: 4. Prepare Workspace Runtime Directories
@@ -194,20 +187,22 @@ echo   Project             : Empress (2D Action-Platformer)
 echo   Unity Version       : 6000.3.10f1
 echo   Node / npx CLI      : [%STATUS_NODE%]
 echo   Unity Editor CLI    : [%STATUS_UNITY%]
-echo   Architecture SoT    : [%STATUS_SOT%]
+echo   Harness Integrity   : [%STATUS_HARNESS%]
 echo   Unity Skills Link   : [%STATUS_SKILLS%]
 echo ====================================================================
 
-if "%STATUS_SOT%"=="OK" (
-    echo [CONFIRMED] Source of Truth is active and ready for agent guidance.
+if "%STATUS_HARNESS%"=="OK" (
+    echo [CONFIRMED] Harness structure and skills are present.
 )
 
 if "%STATUS_NODE%"=="OK" (
     if "%STATUS_SKILLS%"=="OK" (
         echo [SUCCESS] Agent Harness initialized and ready for Empress development.
+        popd
         exit /b 0
     )
 )
 
 echo [ATTENTION] Some dependencies require attention before running autonomous tasks.
+popd
 exit /b 0

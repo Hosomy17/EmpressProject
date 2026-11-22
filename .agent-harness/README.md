@@ -1,187 +1,44 @@
-# Empress Project — AI Agent Harness
+# Empress Project — AI Agent Harness (Human Overview)
 
-> **Mission**: Autonomous development harness for AI coding agents (Antigravity, Claude Code, GitHub Copilot, Cursor, Cline) driving the Empress 2D action-platformer via headless CLI automation, official agent skills, and rigorous verification gates.
+> **Human Onboarding & Overview** — AI agents start at [AGENTS.md](../AGENTS.md) and **must not** load this file or `.agent-harness/diagrams/`.
 
----
-
-## 1. System Architecture & Capabilities
-
-```mermaid
-flowchart TD
-    subgraph S1["1. Discovery Phase"]
-        A["Read Task & Requirements"] --> B["Inspect .agent-harness/project-context.md"]
-        B --> C["Review .agent-harness/agent-rules.md"]
-        C --> D["Parse .agent-harness/source-of-truth.md"]
-        D --> E["Query Available Skills: 'npx skills list'"]
-    end
-
-    subgraph S2["2. Planning & Delegation Phase (Primary Agent)"]
-        E --> P1["Create .agent-harness/tasks/TASK-XXX.md"]
-        P1 --> P2["Register TODO on tasks-board.md"]
-        P2 --> P3["Delegate to Execution Subagent"]
-    end
-
-    subgraph S3["3. Execution Phase (Subagent)"]
-        P3 --> F{"Action Type Selection"}
-        F -->|Unity Agent Skill| G["Execute: npx skills run [skill-name]"]
-        F -->|Source Code / C#| H["Direct C# Script Modification"]
-        F -->|Editor Automation| I["Invoke Unity CLI Headless Batch"]
-        G --> J["Asset / Project State Mutated"]
-        H --> J
-        I --> J
-    end
-
-    subgraph S4["4. Verification Gate (Subagent)"]
-        J --> K["Log SoT Conformance Attestation"]
-        K --> L["Run Unity CLI Test Runner"]
-        L --> M{"Compilation & Tests Pass?"}
-        M -->|Failures Detected| N["Parse Logs/AgentUnity.log & TestResults.xml"]
-        N --> F
-        M -->|All Tests Green| O["Verify AssetDatabase & .meta Integrity"]
-    end
-
-    subgraph S5["5. Review, Cleanup & Handoff (Tech Lead)"]
-        O --> P["Submit REVIEW & Verify Diff"]
-        P --> Q["Purge TASK-XXX.md & Update Board"]
-        Q --> R["Generate Concise Completion Report"]
-    end
-```
-
-### Core Capabilities
-* **Headless Editor Control**: Directly invoke Unity 6 (`6000.3.10f1`) Editor in `-batchmode` without UI overhead.
-* **Official Skills Ecosystem**: Integrated with [`Unity-Technologies/skills`](https://github.com/Unity-Technologies/skills) through the `npx skills` CLI.
-* **Architecture Source of Truth**: Strict architectural governance via [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md) enforcing the Composition + EventBus pattern.
-* **Scene Hierarchy Standard**: Fixed four-separator, prefab-only scene layout defined in [`.agent-harness/scene-hierarchy-standard.md`](file:///.agent-harness/scene-hierarchy-standard.md).
-* **Multi-Agent Task Hand-off**: Decoupled planning, execution, and review cycles via [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md) and `.agent-harness/tasks/`.
-* **Safe Asset Mutation**: No raw `.meta` or binary asset corruption; leverages Unity AssetDatabase and custom Editor batch methods.
-* **Hermetic Verification**: Automated pre-commit verification gates (Compilation, EditMode, and PlayMode tests).
+The Empress agent harness enforces **progressive disclosure** across Antigravity, Claude Code, GitHub Copilot, Cursor, and Cline so agents load only the rules, architecture shards, workflows, and skills strictly needed for their active step.
 
 ---
 
-## 2. Workspace Isolation Map
+## Directory Index
 
-```mermaid
-flowchart LR
-    subgraph HarnessIsolation[".agent-harness/ (Agent Harness Domain)"]
-        direction TB
-        H1["README.md (Entrypoint)"]
-        H2["agent-rules.md (Boundaries & Governance)"]
-        H3["source-of-truth.md (Architecture SoT)"]
-        H9["scene-hierarchy-standard.md (Scene Layout Standard)"]
-        H4["task.template.md (Task Spec Blueprint)"]
-        H5["project-context.md (Topology & Baseline)"]
-        H6["tasks-board.md (Open Tasks Register)"]
-        H7["tasks/ (Active Task Specifications)"]
-        H8["bootstrap-harness.bat (Dependency Init)"]
-    end
-
-    subgraph UnityCore["Unity Project Core (Strict Engine Domain)"]
-        direction TB
-        U1["Assets/_Project/ (C# Scripts, Scenes, Prefabs, Art)"]
-        U2["Packages/ (UPM Manifest & Dependencies)"]
-        U3["ProjectSettings/ (Physics, Input, Tags)"]
-        U4["Logs/ (Headless CLI Logs, Test Results)"]
-    end
-
-    HarnessIsolation -.->|Orchestrates via CLI / Skills| UnityCore
-```
-
-| Path | Ownership | Purpose |
+| Path | Audience | Purpose |
 | :--- | :--- | :--- |
-| `.agent-harness/` | AI Agent & Automation | Harness configuration, operational rules, Source of Truth, bootstrap scripts |
-| `.agent-harness/scene-hierarchy-standard.md` | AI Agent & Automation | Mandatory scene hierarchy layout, naming, and conformance checklist for all `.unity` scenes |
-| `.agent-harness/task.template.md` | AI Planning Agent | Standardized template cloned for all standalone tasks |
-| `.agent-harness/tasks-board.md` | AI Swarm / Team | Central open tasks register tracking `TODO`, `DOING`, `REVIEW` states |
-| `.agent-harness/tasks/` | AI Agents | Active standalone task specifications (`TASK-XXX-name.md`), auto-purged on `DONE` |
-| `Assets/_Project/Source/` | Codebase | C# game code organized into Framework and Project layers with `.asmdef` assemblies |
-| `Assets/_Project/Prefabs/` | Unity Engine | Hero, Boss, Projectiles, VFX, and Scene Settings prefabs |
-| `Assets/_Project/Scenes/` | Unity Engine | BossScene (the current active scene) |
-| `Assets/_Project/ScriptableObject/` | Data | HeroData.asset runtime data configuration |
-| `Assets/Editor/AgentAutomation/` | Agent Tooling | Programmatic batch scripts for safe headless scene/prefab mutations |
-| `Packages/` | Unity Package Manager | Project dependencies, scoped registries, and manifest |
-| `ProjectSettings/` | Unity Engine Configuration | Engine settings, tag manager, graphics and physics matrices |
-| `Logs/` | Ephemeral / Output | Unity batchmode logs (`AgentUnity.log`) and NUnit test reports (`TestResults.xml`) |
+| [AGENTS.md](../AGENTS.md) | AI (Always-On) | Thin root router & immutable global invariants |
+| [architecture/](./architecture/) | AI (Selective) | Domain shards: [core-patterns.md](./architecture/core-patterns.md), [assembly-boundaries.md](./architecture/assembly-boundaries.md), [coding-standards.md](./architecture/coding-standards.md), [scene-hierarchy.md](./architecture/scene-hierarchy.md), [scene-audit-backlog.md](./architecture/scene-audit-backlog.md), [project-topology.md](./architecture/project-topology.md) |
+| [rules/](./rules/) | AI (Role-Scoped) | Governance by phase: [planner-rules.md](./rules/planner-rules.md), [executor-rules.md](./rules/executor-rules.md), [reviewer-rules.md](./rules/reviewer-rules.md) |
+| [workflows/](./workflows/) | AI (Phase-Scoped) | Step-by-step lifecycle: [plan-task.md](./workflows/plan-task.md), [execute-task.md](./workflows/execute-task.md), [review-and-closeout.md](./workflows/review-and-closeout.md) |
+| [tasks-board.md](./tasks-board.md) | AI + Human | Live `TODO` / `DOING` / `REVIEW` register |
+| [task.template.md](./task.template.md) | AI Planner | Blueprint cloned to `tasks/TASK-XXX-<name>.md` (includes `Required Context & Skills`) |
+| [diagrams/](./diagrams/) | Humans Only | Mermaid visual diagrams linked from docs (ignored by AI) |
+| [scripts/](./scripts/) | Shared CLI | [bootstrap-harness.bat](./scripts/bootstrap-harness.bat) and [invoke-unity.ps1](./scripts/invoke-unity.ps1) |
+| [.agents/skills/](../.agents/skills/) | AI (On-Demand) | Executable runbooks (`unity-cli-recompile`, `unity-test-runner`, `unity-headless-scene-ops`, `unity-official-skills`, `harness-bootstrap`) |
 
 ---
 
-## 3. Unity CLI Integration Matrix
+## Visual Diagrams (Humans Only)
 
-The harness executes Unity 6 (`6000.3.10f1`) without opening the GUI. All operations route through the Editor executable.
-
-```powershell
-# Standard Headless CLI Invocation Template (Windows)
-& "C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe" `
-  -batchmode `
-  -nographics `
-  -projectPath "." `
-  -quit `
-  -logFile "Logs/AgentUnity.log"
-```
-
-### Common CLI Command Patterns
-
-| Operation | CLI Command Format |
-| :--- | :--- |
-| **Run EditMode Tests** | `"<UNITY_EDITOR_PATH>" -batchmode -nographics -projectPath "." -runTests -testPlatform editmode -testResults "Logs/EditMode-Results.xml" -logFile "Logs/TestRun.log"` |
-| **Run PlayMode Tests** | `"<UNITY_EDITOR_PATH>" -batchmode -nographics -projectPath "." -runTests -testPlatform playmode -testResults "Logs/PlayMode-Results.xml" -logFile "Logs/TestRun.log"` |
-| **Execute Batch Method** | `"<UNITY_EDITOR_PATH>" -batchmode -nographics -projectPath "." -executeMethod Namespace.ClassName.MethodName -quit -logFile "Logs/BatchExecute.log"` |
-| **Recompile & Refresh** | `"<UNITY_EDITOR_PATH>" -batchmode -nographics -projectPath "." -quit -logFile "Logs/Recompile.log"` |
+- [Task Lifecycle & State Machine](./diagrams/task-lifecycle.md)
+- [Workspace Isolation & CLI Topology](./diagrams/workspace-topology.md)
+- [Core Architecture (Composition + EventBus)](./diagrams/core-architecture.md)
+- [Assembly Boundaries (`.asmdef` Graph)](./diagrams/assembly-boundaries.md)
+- [Scene Hierarchy Root Skeleton](./diagrams/scene-hierarchy.md)
 
 ---
 
-## 4. Unity Skills CLI Quick Reference
+## Human Quick Start
 
-Leverage the official [`Unity-Technologies/skills`](https://github.com/Unity-Technologies/skills) pack:
-
-```bash
-# Verify or add the skills repository
-npx skills add Unity-Technologies/skills
-
-# List all loaded skills
-npx skills list
-
-# Run a specific skill prompt/workflow
-npx skills run <skill-name>
-```
-
----
-
-## 5. Multi-Agent Task Hand-off & Lifecycle
-
-Autonomous collaboration follows a strict hand-off contract managed through [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md) and `.agent-harness/tasks/`:
-
-```mermaid
-flowchart LR
-    subgraph S1["1. Planning Agent"]
-        P1["Formulate Solution"] --> P2["Check SoT Boundaries"]
-        P2 --> P3["Generate .agent-harness/tasks/TASK-XXX.md"]
-        P3 --> P4["Register on tasks-board.md as TODO"]
-        P4 --> P5["Pause: Await User Consent"]
-    end
-
-    subgraph S2["2. Execution Agent"]
-        P5 -->|User Consents| E1["Claim Task as DOING"]
-        E1 --> E2["Implement Code & Assets"]
-        E2 --> E3["Run Unity CLI Tests"]
-        E3 --> E4["Submit for REVIEW"]
-    end
-
-    subgraph S3["3. Technical Lead & User"]
-        E4 --> L1{"User & Lead Review"}
-        L1 -->|Revisions Needed| E1
-        L1 -->|User Consents to DONE| L2["Mark Task DONE"]
-        L2 --> L3["Purge TASK-XXX.md"]
-        L3 --> L4["Remove from tasks-board.md"]
-    end
-```
-
----
-
-## 6. Agent Onboarding Checklist
-
-1. **Bootstrap**: Execute `.agent-harness/bootstrap-harness.bat` (Windows) or `.agent-harness/bootstrap-harness.sh` (macOS/Linux).
-2. **Read Rules**: Review [`.agent-harness/agent-rules.md`](file:///.agent-harness/agent-rules.md) for immutable boundaries and clarification protocols.
-3. **Inspect Context & SoT**: Review [`.agent-harness/project-context.md`](file:///.agent-harness/project-context.md) and validate designs against [`.agent-harness/source-of-truth.md`](file:///.agent-harness/source-of-truth.md). For any scene work, also validate against [`.agent-harness/scene-hierarchy-standard.md`](file:///.agent-harness/scene-hierarchy-standard.md).
-4. **Plan & Pause for Consent**: Inspect [`.agent-harness/tasks-board.md`](file:///.agent-harness/tasks-board.md). For any new implementation request, create `.agent-harness/tasks/TASK-XXX-<name>.md` from `task.template.md`, register it as `TODO`, and **pause for user consent** before delegating execution (Rule 11).
-5. **Attest & Execute (Subagent)**: After user consent, the Execution subagent claims the task (`DOING`), states SoT conformance in logs, executes via skills/CLI, verifies with automated tests, and submits for `REVIEW`.
-6. **Review, Pause for Consent & Closeout (Tech Lead)**: Verify the diff and test results, **pause for user review and consent** on `REVIEW`, and upon approval mark `DONE`, purge `TASK-XXX.md`, remove its row from `tasks-board.md`, and update `project-context.md` if the broader architecture shifted.
+1. **Bootstrap environment** (Windows, from any directory):
+   ```cmd
+   .agent-harness\scripts\bootstrap-harness.bat
+   ```
+   Verifies Node/npx, Unity 6 (`6000.3.10f1`) CLI, harness files, runtime folders (`Logs/`, `.agent-harness/tasks/`, `Assets/Editor/AgentAutomation/`), and `Unity-Technologies/skills`.
+2. **Approval Gates**:
+   - **Gate 1 (`TODO` → `DOING`)**: Primary Agent writes `tasks/TASK-XXX-<name>.md` and pauses for your consent before delegating to an Execution Sub-agent.
+   - **Gate 2 (`REVIEW` → `DONE`)**: Primary Agent verifies diff + Unity CLI test XMLs and pauses for your approval before purging the task spec and clearing `tasks-board.md`.
