@@ -1,0 +1,18 @@
+{
+    "name": "Com.Voobox.Project.AI",
+    "rootNamespace": "Com.Voobox.Project.AI",
+    "references": [
+        "Com.Voobox.Project.Data",
+        "Com.Voobox.Project.Utils",
+        "MackySoft.SerializeReferenceExtensions"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

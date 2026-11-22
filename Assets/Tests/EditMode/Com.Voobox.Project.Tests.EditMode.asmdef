@@ -6,6 +6,7 @@
         "UnityEditor.TestRunner",
         "Com.Voobox.Framework.Events",
         "Com.Voobox.Project.Data",
+        "Com.Voobox.Project.AI",
         "Com.Voobox.Project.Component",
         "Com.Voobox.Project.Events.HeroEvents",
         "Com.Voobox.Project.Events.BossEvents",

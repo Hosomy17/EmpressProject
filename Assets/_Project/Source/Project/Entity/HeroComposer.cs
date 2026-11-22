@@ -9,7 +9,6 @@ using Cysharp.Threading.Tasks;
 using FMODUnity;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Com.Voobox.Project.Entity
 {
@@ -47,8 +46,9 @@ namespace Com.Voobox.Project.Entity
         private ScreenShakerComponent m_screenShakerComponent;
         private HealthComponent m_healthComponent;
 
-        private InputSystemActions m_inputActions;
-        private Vector2 m_moveInput;
+        private IHeroController m_controller;
+        private HeroInputController m_defaultController;
+        private HeroIntent m_currentIntent = HeroIntent.Default;
         private Collider2D m_boxCollider;
         private Rigidbody2D m_rigidbody2D;
         private StudioEventEmitter m_sfxRunEmitter;
@@ -78,13 +78,11 @@ namespace Com.Voobox.Project.Entity
             var renderer = GetComponent<SpriteRenderer>();
             m_sfxRunEmitter = GetComponent<StudioEventEmitter>();
 
-            m_inputActions = new InputSystemActions();
-            m_inputActions.Player.Move.performed += ctx => m_moveInput = ApplyDeadZone(axis: ctx.ReadValue<Vector2>());
-            m_inputActions.Player.Move.canceled += _ => m_moveInput = Vector2.zero;
-            m_inputActions.Player.Jump.performed += TryJump;
-            m_inputActions.Player.Jump.canceled += JumpCut;
-            m_inputActions.Player.Dash.performed += _ => Dash().Forget();
-            m_inputActions.Player.Attack.performed += _ => HandleAttack().Forget();
+            if (m_controller == null)
+            {
+                m_defaultController = new HeroInputController();
+                m_controller = m_defaultController;
+            }
 
             m_heroData = Instantiate(m_heroData);
             Data.AttackUp = m_attackUpArea;
@@ -101,23 +99,81 @@ namespace Com.Voobox.Project.Entity
             m_attackerComponent = new AttackerComponent(Data);
             m_heroAnimatorComponent = new HeroAnimatorComponent(animator, renderer);//TODO
             m_frameFreezerComponent = new FrameFreezerComponent();//TODO
-            m_screenShakerComponent = new ScreenShakerComponent(Data);
+            m_screenShakerComponent = (m_positionComposer != null || Data.ImpulseSource != null)
+                ? new ScreenShakerComponent(Data)
+                : null;
             m_healthComponent = new HealthComponent(Data);
         }
 
         private void Start()
         {
-            m_attackRightArea.OnHitSuccess += () => Recoil(false).Forget();
-            m_attackLeftArea.OnHitSuccess += () => Recoil(true).Forget();
-            m_attackDownArea.OnHitSuccess += () => PogoJump().Forget();
-            m_attackUpArea.OnHitSuccess += HandleUpAttackHit;
+            if (m_attackRightArea != null)
+                m_attackRightArea.OnHitSuccess += HandleRightAttackHit;
+            if (m_attackLeftArea != null)
+                m_attackLeftArea.OnHitSuccess += HandleLeftAttackHit;
+            if (m_attackDownArea != null)
+                m_attackDownArea.OnHitSuccess += HandleDownAttackHit;
+            if (m_attackUpArea != null)
+                m_attackUpArea.OnHitSuccess += HandleUpAttackHit;
         }
 
-        private void OnEnable() => m_inputActions.Enable();
-        private void OnDisable() => m_inputActions.Disable();
+        private void OnDestroy()
+        {
+            if (m_attackRightArea != null)
+                m_attackRightArea.OnHitSuccess -= HandleRightAttackHit;
+            if (m_attackLeftArea != null)
+                m_attackLeftArea.OnHitSuccess -= HandleLeftAttackHit;
+            if (m_attackDownArea != null)
+                m_attackDownArea.OnHitSuccess -= HandleDownAttackHit;
+            if (m_attackUpArea != null)
+                m_attackUpArea.OnHitSuccess -= HandleUpAttackHit;
+
+            m_defaultController?.Dispose();
+        }
+
+        /// <summary>
+        /// Replaces the active <see cref="IHeroController"/> driving this entity.
+        /// </summary>
+        public void SetController(IHeroController controller)
+        {
+            if (ReferenceEquals(m_controller, controller)) return;
+
+            if (isActiveAndEnabled)
+                m_controller?.Disable();
+
+            m_controller = controller;
+
+            if (isActiveAndEnabled)
+                m_controller?.Enable();
+        }
+
+        private void OnEnable() => m_controller?.Enable();
+        private void OnDisable() => m_controller?.Disable();
 
         private void Update()
         {
+            if (m_controller != null)
+            {
+                var bodyState = BuildBodyState();
+                m_currentIntent = m_controller.SampleIntent(in bodyState, Time.deltaTime);
+            }
+            else
+            {
+                m_currentIntent = HeroIntent.Default;
+            }
+
+            if (m_currentIntent.JumpPressed)
+                TryJump();
+
+            if (m_currentIntent.JumpReleased)
+                JumpCut();
+
+            if (m_currentIntent.DashPressed)
+                Dash().Forget();
+
+            if (m_currentIntent.AttackPressed)
+                HandleAttack().Forget();
+
             UpdateAnimations();
             HandleFlip();
             HandleRunParticles();
@@ -126,8 +182,26 @@ namespace Com.Voobox.Project.Entity
         private void FixedUpdate()
         {
             CheckGround();
-            m_screenShakerComponent.StabilizeTargetOffset();
+
+            if (m_screenShakerComponent != null && m_positionComposer != null)
+                m_screenShakerComponent.StabilizeTargetOffset();
+
             Run();
+        }
+
+        private HeroBodyState BuildBodyState()
+        {
+            return new HeroBodyState
+            {
+                Position = transform.position,
+                IsGrounded = m_isGrounded,
+                IsAttacking = m_isAttacking,
+                IsDashing = m_isDashing,
+                CanAttack = CanAttack(),
+                CanDash = m_hasDash,
+                IsDead = m_healthComponent != null && m_healthComponent.IsDead,
+                HealthNormalized = m_healthComponent != null ? m_healthComponent.HealthNormalized : 0f
+            };
         }
 
         private void CheckGround()
@@ -153,7 +227,7 @@ namespace Com.Voobox.Project.Entity
 
         private void UpdateAnimations()
         {
-            m_heroAnimatorComponent.SetSpeed(Mathf.Abs(m_moveInput.x));
+            m_heroAnimatorComponent.SetSpeed(Mathf.Abs(m_currentIntent.MoveAxis.x));
             m_heroAnimatorComponent.SetGrounded(m_isGrounded);
             m_heroAnimatorComponent.SetDash(m_isDashing);
             m_heroAnimatorComponent.SetAirVelocity(m_rigidbody2D.linearVelocity.y);
@@ -161,18 +235,13 @@ namespace Com.Voobox.Project.Entity
 
         private void HandleFlip()
         {
-            if (m_isDashing || m_moveInput.x == 0) return;
+            if (m_isDashing || m_currentIntent.MoveAxis.x == 0f) return;
 
-            m_isFacingRight = m_moveInput.x > 0;
+            m_isFacingRight = m_currentIntent.MoveAxis.x > 0f;
             m_heroAnimatorComponent.FlipX(!m_isFacingRight);
-            m_screenShakerComponent.FlipTargetOffsetX(!m_isFacingRight);
-        }
 
-        private static Vector2 ApplyDeadZone(Vector2 axis)//TODO
-        {
-            var x = Mathf.Abs(axis.x) < 0.2f ? 0 : Mathf.Sign(axis.x);
-            var y = Mathf.Abs(axis.y) < 0.2f ? 0 : Mathf.Sign(axis.y);
-            return new Vector2(x, y);
+            if (m_screenShakerComponent != null && m_positionComposer != null)
+                m_screenShakerComponent.FlipTargetOffsetX(!m_isFacingRight);
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -242,7 +311,7 @@ namespace Com.Voobox.Project.Entity
 
         private void HandleRunParticles()
         {
-            var isRunning = m_isGrounded && Mathf.Abs(m_moveInput.x) > 0.05f && CanRun();
+            var isRunning = m_isGrounded && Mathf.Abs(m_currentIntent.MoveAxis.x) > 0.05f && CanRun();
 
             if (isRunning)
             {
@@ -265,13 +334,15 @@ namespace Com.Voobox.Project.Entity
         {
             if (!CanRun()) return;
 
-            m_movement2DComponent.Run(m_moveInput.x);
+            var moveX = m_currentIntent.MoveAxis.x * m_currentIntent.SpeedMultiplier;
+            m_movement2DComponent.Run(moveX);
 
             var value = 0;
-            if (m_isGrounded && m_moveInput.x != 0)
+            if (m_isGrounded && moveX != 0f)
                 value = 1;
 
-            m_sfxRunEmitter.SetParameter("run_velocity", value);
+            if (m_sfxRunEmitter != null && !m_sfxRunEmitter.EventReference.IsNull)
+                m_sfxRunEmitter.SetParameter("run_velocity", value);
         }
 
         private bool CanRun()
@@ -279,7 +350,7 @@ namespace Com.Voobox.Project.Entity
             return !m_isDashing && !m_isRecoiling;
         }
 
-        private void TryJump(InputAction.CallbackContext callbackContext)
+        private void TryJump()
         {
             if (!m_hasJump)
             {
@@ -300,7 +371,7 @@ namespace Com.Voobox.Project.Entity
                 m_jumpParticles.Play();
         }
 
-        private void JumpCut(InputAction.CallbackContext callbackContext)
+        private void JumpCut()
         {
             if (m_isJumping && m_rigidbody2D.linearVelocity.y > 0)
                 m_jump2DComponent.JumpCut();
@@ -314,7 +385,9 @@ namespace Com.Voobox.Project.Entity
             m_hasJump = true;
             m_isJumping = false;
             m_jump2DComponent.PogoJump();
-            m_screenShakerComponent.GenerateImpulse();
+
+            if (m_screenShakerComponent != null && Data.ImpulseSource != null)
+                m_screenShakerComponent.GenerateImpulse();
         }
 
         #endregion
@@ -347,23 +420,34 @@ namespace Com.Voobox.Project.Entity
             if(!CanAttack()) return;
 
             m_isAttacking = true;
-            switch (m_moveInput.y)
+            switch (m_currentIntent.MoveAxis.y)
             {
                 case > 0.75f:
-                    m_heroAnimatorComponent.SetAttackUp(true);
-                    await m_attackerComponent.AttackUp();
+                    if (m_attackUpArea != null)
+                    {
+                        m_heroAnimatorComponent.SetAttackUp(true);
+                        await m_attackerComponent.AttackUp();
+                    }
                     break;
                 case < -0.75f when !m_isGrounded:
-                    m_heroAnimatorComponent.SetAttackDown(true);
-                    await m_attackerComponent.AttackDown();
+                    if (m_attackDownArea != null)
+                    {
+                        m_heroAnimatorComponent.SetAttackDown(true);
+                        await m_attackerComponent.AttackDown();
+                    }
                     break;
                 default:
                 {
-                    m_heroAnimatorComponent.SetAttackFront(true);
-                    if (m_isFacingRight)
+                    if (m_isFacingRight && m_attackRightArea != null)
+                    {
+                        m_heroAnimatorComponent.SetAttackFront(true);
                         await m_attackerComponent.AttackRight();
-                    else
+                    }
+                    else if (!m_isFacingRight && m_attackLeftArea != null)
+                    {
+                        m_heroAnimatorComponent.SetAttackFront(true);
                         await m_attackerComponent.AttackLeft();
+                    }
                     break;
                 }
             }
@@ -372,9 +456,15 @@ namespace Com.Voobox.Project.Entity
             m_isAttacking = false;
         }
 
+        private void HandleRightAttackHit() => Recoil(false).Forget();
+        private void HandleLeftAttackHit() => Recoil(true).Forget();
+        private void HandleDownAttackHit() => PogoJump().Forget();
+
         private void HandleUpAttackHit()
         {
-            m_screenShakerComponent.ShakeForce(-1f);
+            if (m_screenShakerComponent != null && Data.ImpulseSource != null)
+                m_screenShakerComponent.ShakeForce(-1f);
+
             DoHitStop().Forget();
 
             if (!m_isGrounded)
@@ -389,7 +479,9 @@ namespace Com.Voobox.Project.Entity
 
             var recoilDirection = isDirectionRight ? 1f : -1f;
 
-            m_screenShakerComponent.ShakeDirection(-recoilDirection);
+            if (m_screenShakerComponent != null && Data.ImpulseSource != null)
+                m_screenShakerComponent.ShakeDirection(-recoilDirection);
+
             await ApplyRecoilAsync(recoilDirection);
         }
 

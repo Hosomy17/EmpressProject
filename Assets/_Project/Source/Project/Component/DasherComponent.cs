@@ -14,10 +14,23 @@ namespace Com.Voobox.Project.Component
         private readonly TaskHandle m_taskDash = new();
         private readonly TaskHandle m_taskDashCooldown = new();
 
+        public bool HasDashSfx => !m_dasherData.SFXDashEventReference.IsNull;
+
         public DasherComponent(IDasherData dasherData)
         {
             m_dasherData = dasherData;
             m_rigidbody2D = dasherData.Rigidbody2D;
+        }
+
+        public bool TryPlayDashSfx()
+        {
+            if (!HasDashSfx)
+            {
+                return false;
+            }
+
+            RuntimeManager.PlayOneShot(m_dasherData.SFXDashEventReference);
+            return true;
         }
 
         public async UniTask Dash(int dashDir)
@@ -25,7 +38,7 @@ namespace Com.Voobox.Project.Component
             var originalGravity = m_rigidbody2D.gravityScale;
             m_rigidbody2D.gravityScale = 0f;
             m_rigidbody2D.linearVelocity = new Vector2(dashDir * m_dasherData.DashForce, 0f);
-            RuntimeManager.PlayOneShot(m_dasherData.SFXDashEventReference);
+            TryPlayDashSfx();
 
             await UniTask.Delay(TimeSpan.FromSeconds(m_dasherData.DashDuration), cancellationToken: m_taskDash.GetNewToken()).SuppressCancellationThrow();
 

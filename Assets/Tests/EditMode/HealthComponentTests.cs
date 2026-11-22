@@ -63,5 +63,52 @@ namespace Com.Voobox.Project.Tests.EditMode
             health.TakeDamage();
             Assert.IsTrue(health.IsDead);
         }
+
+        [Test]
+        public void Metrics_InitialState_ExposeMaxCurrentAndFullNormalizedHealth()
+        {
+            var health = new HealthComponent(new StubHealthData(4));
+
+            Assert.AreEqual(4, health.MaxHitPoints);
+            Assert.AreEqual(4, health.CurrentHitPoints);
+            Assert.AreEqual(1f, health.HealthNormalized, 0.0001f);
+        }
+
+        [Test]
+        public void Metrics_AfterTakeDamage_UpdateCurrentAndNormalizedHealth()
+        {
+            var health = new HealthComponent(new StubHealthData(4));
+
+            health.TakeDamage();
+            Assert.AreEqual(4, health.MaxHitPoints);
+            Assert.AreEqual(3, health.CurrentHitPoints);
+            Assert.AreEqual(0.75f, health.HealthNormalized, 0.0001f);
+
+            health.TakeDamage();
+            health.TakeDamage();
+            health.TakeDamage();
+            Assert.AreEqual(0, health.CurrentHitPoints);
+            Assert.AreEqual(0f, health.HealthNormalized, 0.0001f);
+
+            health.TakeDamage();
+            Assert.AreEqual(0, health.CurrentHitPoints);
+            Assert.AreEqual(0f, health.HealthNormalized, 0.0001f);
+        }
+
+        [Test]
+        public void Metrics_WithZeroOrNegativeMaxHitPoints_ClampToZeroAndReturnZeroNormalized()
+        {
+            var zeroHealth = new HealthComponent(new StubHealthData(0));
+            Assert.AreEqual(0, zeroHealth.MaxHitPoints);
+            Assert.AreEqual(0, zeroHealth.CurrentHitPoints);
+            Assert.AreEqual(0f, zeroHealth.HealthNormalized, 0.0001f);
+            Assert.IsTrue(zeroHealth.IsDead);
+
+            var negativeHealth = new HealthComponent(new StubHealthData(-5));
+            Assert.AreEqual(0, negativeHealth.MaxHitPoints);
+            Assert.AreEqual(0, negativeHealth.CurrentHitPoints);
+            Assert.AreEqual(0f, negativeHealth.HealthNormalized, 0.0001f);
+            Assert.IsTrue(negativeHealth.IsDead);
+        }
     }
 }

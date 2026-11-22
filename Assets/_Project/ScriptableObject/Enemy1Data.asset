@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72d8e31e46e1d2f47921904f7129b32a, type: 3}
+  m_Name: Enemy1Data
+  m_EditorClassIdentifier: Com.Voobox.Project.Data::Com.Voobox.Project.Data.EnemyDataScriptableObject
+  m_enemyData:
+    m_maxHitPoints: 3
+    m_hurtLayer:
+      serializedVersion: 2
+      m_Bits: 256
+    m_speed: 3.5
+    m_recoilBackForce: 0
+    m_recoilUpForce: 0
+    m_recoilDuration: 0
+    m_dashForce: 12
+    m_dashDuration: 0.25
+    m_dashCooldown: 0.5
+    m_sfxDashEventReference:
+      Guid:
+        Data1: 0
+        Data2: 0
+        Data3: 0
+        Data4: 0
+      Path: 
+    m_detectionBoxSize: {x: 10, y: 4}
+    m_detectionBoxOffset: {x: 0, y: 0}
+    m_detectionRange: 5.5
+    m_detectionTargetLayer:
+      serializedVersion: 2
+      m_Bits: 8

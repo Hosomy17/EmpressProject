@@ -7,9 +7,20 @@ flowchart TD
     subgraph ComposerLayer["Composers (MonoBehaviour Entities)"]
         direction TB
         HC["HeroComposer"]
+        EC["EnemyComposer"]
         BC["BossComposer"]
         BAE["BossAttackEmitter"]
         GS["GameScript (Systems)"]
+    end
+
+    subgraph ControlLayer["Controllers & Composable AI"]
+        direction TB
+        IHC["IHeroController"]
+        IEC["IEnemyController"]
+        HIC["HeroInputController"]
+        HBC["HeroBrainController"]
+        SMB["StateMachineBrainComponent"]
+        CTX["EnemyContext + Behaviors/Conditions"]
     end
 
     subgraph ComponentLayer["Components (Plain C# Local Logic)"]
@@ -24,7 +35,7 @@ flowchart TD
         SSC["ScreenShakerComponent"]
     end
 
-    subgraph DataLayer["Data (Interfaces + ScriptableObjects)"]
+    subgraph DataLayer["Data (Interfaces, Structs & ScriptableObjects)"]
         direction TB
         IMove["IMovementData"]
         IJump["IJumpData"]
@@ -33,18 +44,28 @@ flowchart TD
         IHlt["IHealthData"]
         IShk["IScreenShakerData"]
         HD["HeroData (HeroDataScriptableObject)"]
+        ED["EnemyData (EnemyDataScriptableObject)"]
         BD["BossData (BossDataScriptableObject)"]
+        BP["BrainProfileScriptableObject"]
     end
 
     subgraph EventLayer["EventBus (Cross-Entity Mediation)"]
         direction TB
-        EB["EventBus (static)"]
         IBE["InitializeBossEvent"]
         DRS["DoRaiseOfSwordsEvent"]
         BDE["BossDiedEvent"]
         HDE["HeroDiedEvent"]
-        ISE["InitializeSteamworksEvent"]
     end
+
+    HC -->|"samples"| IHC
+    HIC -.->|"implements"| IHC
+    HBC -.->|"implements"| IHC
+    HBC -->|"adapts"| SMB
+
+    EC -->|"samples"| IEC
+    SMB -.->|"implements"| IEC
+    SMB -->|"drives"| CTX
+    SMB -->|"reads"| BP
 
     HC -->|"creates & orchestrates"| M2D
     HC -->|"creates & orchestrates"| J2D
@@ -54,6 +75,10 @@ flowchart TD
     HC -->|"creates & orchestrates"| HAC
     HC -->|"creates & orchestrates"| FFC
     HC -->|"creates & orchestrates"| SSC
+
+    EC -->|"creates & orchestrates"| M2D
+    EC -->|"creates & orchestrates"| DC
+    EC -->|"creates & orchestrates"| HTC
     BC -->|"creates & orchestrates"| HTC
 
     M2D -->|"reads"| IMove
@@ -69,6 +94,9 @@ flowchart TD
     HD -->|"implements"| IAtk
     HD -->|"implements"| IHlt
     HD -->|"implements"| IShk
+    ED -->|"implements"| IMove
+    ED -->|"implements"| IDash
+    ED -->|"implements"| IHlt
     BD -->|"implements"| IHlt
 
     BC -->|"subscribes"| IBE
