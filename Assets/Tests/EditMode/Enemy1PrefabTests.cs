@@ -47,8 +47,6 @@ namespace Com.Voobox.Project.Tests.EditMode
             Assert.AreEqual(12f, data.DashForce, 0.0001f);
             Assert.AreEqual(0.25f, data.DashDuration, 0.0001f);
             Assert.AreEqual(0.5f, data.DashCooldown, 0.0001f);
-            Assert.AreEqual(new Vector2(10f, 4f), data.DetectionBoxSize);
-            Assert.AreEqual(Vector2.zero, data.DetectionBoxOffset);
             Assert.AreEqual(5.5f, data.DetectionRange, 0.0001f);
             Assert.AreEqual(1 << HeroLayer, data.DetectionTargetLayer.value);
         }

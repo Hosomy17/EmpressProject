@@ -16,7 +16,7 @@
 - **Cross-Scene Systems (`Com.Voobox.Project.Systems`)**: `GameScript` (loads `GameOverScene` on `HeroDiedEvent`, `VictoryScene` on `BossDiedEvent`), `PauseController` (Escape toggles pause).
 - **Framework**: `EventBus` (`Com.Voobox.Framework.Events`), `ObjectPooler` / `PooledObject` / `ReturnToPoolBehaviour` (`Com.Voobox.Framework.ObjectPooling`), Steamworks init (`BossSceneScript` + `PlaceSteamName`), `TaskHandle` (`Utils`).
 - **Scenes (4)**: `MainMenuScene.unity`, `BossScene.unity`, `GameOverScene.unity`, `VictoryScene.unity`.
-- **Tests**: 28 EditMode NUnit test fixtures (131 tests) in `Assets/Tests/EditMode/` (`Com.Voobox.Project.Tests.EditMode`). `Assets/Tests/PlayMode/` does not yet exist.
+- **Tests**: 30 EditMode NUnit test fixtures (131 project tests; 132 total EditMode run) in `Assets/Tests/EditMode/` (`Com.Voobox.Project.Tests.EditMode`). `Assets/Tests/PlayMode/` does not yet exist.
 
 ## 3. Directory Anchor Points
 

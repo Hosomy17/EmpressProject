@@ -7,6 +7,7 @@ namespace Com.Voobox.Project.Data
     {
         public float JumpForce { get; }
         public float JumpBufferTime { get; }
+        public LayerMask GroundLayer { get; }
         public EventReference SFXJumpEventReference { get; }
         public Rigidbody2D Rigidbody2D { get; }
     }

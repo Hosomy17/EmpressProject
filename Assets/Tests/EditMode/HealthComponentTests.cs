@@ -1,6 +1,7 @@
 using Com.Voobox.Project.Component;
 using Com.Voobox.Project.Data;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Com.Voobox.Project.Tests.EditMode
 {
@@ -9,6 +10,8 @@ namespace Com.Voobox.Project.Tests.EditMode
         private sealed class StubHealthData : IHealthData
         {
             public int MaxHitPoints { get; }
+            public LayerMask HurtLayer { get; }
+            public float KnockbackForce { get; }
 
             public StubHealthData(int maxHealth)
             {

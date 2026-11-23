@@ -75,8 +75,6 @@ namespace Com.Voobox.Project.Tests.EditMode
             LayerMask hurtLayer = default,
             BrainProfileScriptableObject brainProfile = null,
             int layer = 7,
-            Vector2? detectionBoxSize = null,
-            Vector2 detectionBoxOffset = default,
             float detectionRange = 5.5f,
             LayerMask detectionTargetLayer = default)
         {
@@ -87,8 +85,6 @@ namespace Com.Voobox.Project.Tests.EditMode
             SetPrivateField(data, "m_speed", speed);
             SetPrivateField(data, "m_maxHitPoints", maxHitPoints);
             SetPrivateField(data, "m_hurtLayer", hurtLayer);
-            SetPrivateField(data, "m_detectionBoxSize", detectionBoxSize ?? new Vector2(10f, 4f));
-            SetPrivateField(data, "m_detectionBoxOffset", detectionBoxOffset);
             SetPrivateField(data, "m_detectionRange", detectionRange);
             SetPrivateField(data, "m_detectionTargetLayer", detectionTargetLayer);
             SetPrivateField(dataSo, "m_enemyData", data);

@@ -223,8 +223,6 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             var enemyData = new EnemyData();
 
-            Assert.AreEqual(new Vector2(10f, 4f), enemyData.DetectionBoxSize);
-            Assert.AreEqual(Vector2.zero, enemyData.DetectionBoxOffset);
             Assert.AreEqual(5.5f, enemyData.DetectionRange, 0.0001f);
             Assert.AreEqual((LayerMask)0, enemyData.DetectionTargetLayer);
         }
@@ -237,6 +235,7 @@ namespace Com.Voobox.Project.Tests.EditMode
 
             SetPrivateField(enemyData, "m_maxHitPoints", 12);
             SetPrivateField(enemyData, "m_hurtLayer", (LayerMask)(1 << 8));
+            SetPrivateField(enemyData, "m_knockbackForce", 6.5f);
             SetPrivateField(enemyData, "m_speed", 6.5f);
             SetPrivateField(enemyData, "m_recoilBackForce", 4f);
             SetPrivateField(enemyData, "m_recoilUpForce", 2.5f);
@@ -245,8 +244,6 @@ namespace Com.Voobox.Project.Tests.EditMode
             SetPrivateField(enemyData, "m_dashDuration", 0.2f);
             SetPrivateField(enemyData, "m_dashCooldown", 1.1f);
             SetPrivateField(enemyData, "m_sfxDashEventReference", sfxDashRef);
-            SetPrivateField(enemyData, "m_detectionBoxSize", new Vector2(12f, 5f));
-            SetPrivateField(enemyData, "m_detectionBoxOffset", new Vector2(1.5f, 0.5f));
             SetPrivateField(enemyData, "m_detectionRange", 7.25f);
             SetPrivateField(enemyData, "m_detectionTargetLayer", (LayerMask)(1 << 6));
 
@@ -261,13 +258,13 @@ namespace Com.Voobox.Project.Tests.EditMode
                 EnemyData exposed = enemyDataSo.EnemyData;
                 Assert.AreSame(enemyData, exposed);
                 Assert.AreEqual((LayerMask)(1 << 8), exposed.HurtLayer);
-                Assert.AreEqual(new Vector2(12f, 5f), exposed.DetectionBoxSize);
-                Assert.AreEqual(new Vector2(1.5f, 0.5f), exposed.DetectionBoxOffset);
                 Assert.AreEqual(7.25f, exposed.DetectionRange, 0.0001f);
                 Assert.AreEqual((LayerMask)(1 << 6), exposed.DetectionTargetLayer);
 
                 IHealthData healthData = exposed;
                 Assert.AreEqual(12, healthData.MaxHitPoints);
+                Assert.AreEqual((LayerMask)(1 << 8), healthData.HurtLayer);
+                Assert.AreEqual(6.5f, healthData.KnockbackForce, 0.0001f);
 
                 IMovementData movementData = exposed;
                 Assert.AreEqual(6.5f, movementData.Speed, 0.0001f);

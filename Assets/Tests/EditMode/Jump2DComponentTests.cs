@@ -14,6 +14,7 @@ namespace Com.Voobox.Project.Tests.EditMode
         {
             public float JumpForce { get; set; } = 15f;
             public float JumpBufferTime { get; set; } = 0.2f;
+            public LayerMask GroundLayer { get; }
             public EventReference SFXJumpEventReference { get; set; }
             public Rigidbody2D Rigidbody2D { get; set; }
         }
